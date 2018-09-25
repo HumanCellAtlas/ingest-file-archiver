@@ -10,5 +10,19 @@
     "scheme" : "https",
     "host": "submissions-dev.ebi.ac.uk",
     "port": "80"
+  },
+  "AMQP": {
+    "newFile" : {
+      "connection" : {
+        "scheme": "amqp",
+        "host" : "localhost",
+        "port" : 5672
+      },
+      "messaging" : {
+        "exchange" : "ingest.file.staged.exchange",
+        "queueName" : "ingest.file.create.staged",
+        "exchangeType": "fanout"
+      }
+    }
   }
 }

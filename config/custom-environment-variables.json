@@ -1,0 +1,9 @@
+{
+  "AUTH": {
+    "authUrl": "AAP_URL",
+    "credentials": {
+      "username": "AAP_USERNAME",
+      "password": "AAP_PASSWORD"
+    }
+  }
+}
