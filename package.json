@@ -4,7 +4,12 @@
   "private": true,
   "dependencies": {
     "amqplib": "^0.5.2",
+    "aws-sdk": "^2.321.0",
+    "bluebird": "^3.5.2",
     "config": "^2.0.1",
-    "debug": "~2.6.9"
+    "debug": "~2.6.9",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2",
+    "tus-js-client": "^1.5.1"
   }
 }
