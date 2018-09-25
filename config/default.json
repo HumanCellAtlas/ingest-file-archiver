@@ -1,0 +1,14 @@
+{
+  "AUTH": {
+    "authUrl" : "https://explore.api.aai.ebi.ac.uk/auth",
+    "credentials": {
+      "username": "REDACTED",
+      "password": "REDACTED"
+    }
+  },
+  "USI": {
+    "scheme" : "https",
+    "host": "submissions-dev.ebi.ac.uk",
+    "port": "80"
+  }
+}
