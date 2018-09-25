@@ -8,6 +8,9 @@
     "bluebird": "^3.5.2",
     "config": "^2.0.1",
     "debug": "~2.6.9",
+    "install": "^0.12.1",
+    "jsonwebtoken": "^8.3.0",
+    "npm": "^6.4.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
     "tus-js-client": "^1.5.1"
