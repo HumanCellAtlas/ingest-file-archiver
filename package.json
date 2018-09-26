@@ -14,5 +14,8 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
     "tus-js-client": "^1.5.1"
+  },
+  "devDependencies": {
+    "typescript": "^3.0.3"
   }
 }
