@@ -1,15 +1,16 @@
-const Promise = require('bluebird');
+import Promise from "bluebird";
 
-class NewFileHandler {
+
+class NewFileHandler implements IHandler {
     constructor() {
     }
 
-    handle(msg) {
+    handle(msg: AmqpMessage) {
         let msgContent = null;
         try {
-            msgContent = JSON.parse(msg.content);
+            msgContent = JSON.parse(msg.messageBytes);
         } catch (err) {
-            console.error("Failed to parse message content (ignoring): " + msg.content);
+            console.error("Failed to parse message content (ignoring): " + msg.messageBytes);
             return;
         }
 
@@ -18,4 +19,4 @@ class NewFileHandler {
     }
 }
 
-module.exports = NewFileHandler;
+export default NewFileHandler;

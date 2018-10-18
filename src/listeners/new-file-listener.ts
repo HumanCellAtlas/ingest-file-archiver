@@ -1,10 +1,16 @@
 /**
  * Created by rolando on 01/08/2018.
  */
-const Listener = require('./listener');
+import {Listener, ConnectionProperties} from "./listener";
 
 class FileValidationListener {
-    constructor(rabbitConnectionProperties, exchange, queue, handler, exchangeType) {
+    exchange: string;
+    exchangeType: string;
+    queue: string;
+    handler: IHandler;
+    listener: Listener;
+
+    constructor(rabbitConnectionProperties: ConnectionProperties, exchange: string, queue: string, handler: IHandler, exchangeType: string) {
         this.exchange = exchange;
         this.exchangeType = exchangeType;
         this.queue = queue;
@@ -18,4 +24,4 @@ class FileValidationListener {
     }
 }
 
-module.exports = FileValidationListener;
+export default FileValidationListener;

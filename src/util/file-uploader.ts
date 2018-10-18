@@ -1,5 +1,8 @@
-var tus = require("tus-js-client");
-
+import tus, {UploadOptions} from "tus-js-client";
+import TokenManager from "./token-manager";
+import TusUpload from "../model/tus-upload";
+import Promise from "bluebird";
+import fs from "fs";
 
 /**
  *
@@ -7,7 +10,9 @@ var tus = require("tus-js-client");
  *
  */
 class FileUploader {
-    constructor(tokenManager) {
+    tokenManager: TokenManager;
+
+    constructor(tokenManager: TokenManager) {
         this.tokenManager = tokenManager;
     }
 
@@ -15,47 +20,62 @@ class FileUploader {
      *
      * Given a TusUpload object, uploads the specified file
      */
-    stageFile(tusUpload, submission) {
+    stageFile(tusUpload: TusUpload, submission: string) : Promise<void> {
 
-        this._getToken()
-            .then(token => {return this._insertToken(tusUpload, token)})
+        return this._getToken()
+            .then(token => {return FileUploader._insertToken(tusUpload, token)})
             .then(tusUpload => {return FileUploader._insertSubmission(tusUpload, submission)})
             .then(tusUpload => {return this._doUpload(tusUpload)});
     }
 
-    _doUpload(tusUpload) {
-        const upload = new tus.Upload(tusUpload.filePath, {
-            endpoint: tusUpload.uploadUrl,
-            retryDelays: [0, 1000, 3000, 5000],
-            metadata: tusUpload.metadata,
-            onError: function(error) {
-                console.log("Failed because: " + error)
-            },
-            onProgress: function(bytesUploaded, bytesTotal) {
-                var percentage = (bytesUploaded / bytesTotal * 100).toFixed(2)
-                console.log(bytesUploaded, bytesTotal, percentage + "%")
-            },
-            onSuccess: function() {
-                console.log("Download %s from %s", upload.file.name, upload.url)
-            }
-        });
+    /**
+     * Performs the upload, resolves when the upload finishes successfully
+     *
+     * @param tusUpload
+     * @private
+     */
+    _doUpload(tusUpload: TusUpload) : Promise<void>{
+        return new Promise<void>((resolve, reject) => {
+            const fileStream = fs.createReadStream(tusUpload.filePath!);
+            fs.readFile(tusUpload.filePath!, {encoding: 'utf-8'}, (err, data) => {
+                const dataBuffer = Buffer.from(data);
 
-        return Promise.resolve(upload.start());
+                // TODO: maintainers of tus-js-client need to add streams as an allowable type for tus file sources
+                // @ts-ignore
+                const upload = new tus.Upload(fileStream, {
+                    endpoint: tusUpload.uploadUrl!,
+                    retryDelays: [0, 1000, 3000, 5000],
+                    headers: tusUpload.metadataToDict(),
+                    onError: (error: any) => {
+                        console.log("Failed because: " + error);
+                        reject(error);
+                    },
+                    onProgress: (bytesUploaded: number, bytesTotal: number) => {
+                        const percentage = (bytesUploaded / bytesTotal * 100).toFixed(2);
+                        console.log(bytesUploaded, bytesTotal, percentage + "%");
+                    },
+                    onSuccess: () => {
+                        console.log("Download complete");
+                        resolve();
+                    }
+                });
+            });
+        });
     }
 
-    stageS3File(s3FileLocatorObj) {
+    stageS3File(s3FileLocatorObj: any) {
         return null; // TODO: do this
     }
 
-    _insertToken(tusUpload, token) {
+   static _insertToken(tusUpload: TusUpload, token: string) : Promise<TusUpload> {
         return Promise.resolve(tusUpload.addToken(token));
     }
 
-    _insertSubmission(tusUpload, submission) {
+    static _insertSubmission(tusUpload: TusUpload, submission: string) : Promise<TusUpload> {
         return Promise.resolve(tusUpload.addSubmission(submission));
     }
 
-    _getToken() {
+    _getToken() : Promise<string> {
         return this.tokenManager.getToken();
     }
 
