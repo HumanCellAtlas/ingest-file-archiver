@@ -1,4 +1,4 @@
-import tus, {UploadOptions} from "tus-js-client";
+import tus, {Upload, UploadOptions} from "tus-js-client";
 import TokenManager from "./token-manager";
 import TusUpload from "../model/tus-upload";
 import Promise from "bluebird";
@@ -20,7 +20,8 @@ class FileUploader {
      *
      * Given a TusUpload object, uploads the specified file
      */
-    stageFile(tusUpload: TusUpload, submission: string) : Promise<void> {
+    stageLocalFile(tusUpload: TusUpload, submission: string) : Promise<Upload> {
+        tusUpload.fileStream = fs.createReadStream(tusUpload.filePath!);
 
         return this._getToken()
             .then(token => {return FileUploader._insertToken(tusUpload, token)})
@@ -34,32 +35,32 @@ class FileUploader {
      * @param tusUpload
      * @private
      */
-    _doUpload(tusUpload: TusUpload) : Promise<void>{
-        return new Promise<void>((resolve, reject) => {
-            const fileStream = fs.createReadStream(tusUpload.filePath!);
-            fs.readFile(tusUpload.filePath!, {encoding: 'utf-8'}, (err, data) => {
-                const dataBuffer = Buffer.from(data);
+    _doUpload(tusUpload: TusUpload) : Promise<Upload>{
+        return new Promise<Upload>((resolve, reject) => {
+            // TODO: maintainers of tus-js-client need to add streams as an allowable type for tus file sources
+            // @ts-ignore TODO: tus.io typescript maintainers need to allow fileStreams here
+            const fileStream:Blob = tusUpload.fileStream!;
 
-                // TODO: maintainers of tus-js-client need to add streams as an allowable type for tus file sources
-                // @ts-ignore
-                const upload = new tus.Upload(fileStream, {
-                    endpoint: tusUpload.uploadUrl!,
-                    retryDelays: [0, 1000, 3000, 5000],
-                    headers: tusUpload.metadataToDict(),
-                    onError: (error: any) => {
-                        console.log("Failed because: " + error);
-                        reject(error);
-                    },
-                    onProgress: (bytesUploaded: number, bytesTotal: number) => {
-                        const percentage = (bytesUploaded / bytesTotal * 100).toFixed(2);
-                        console.log(bytesUploaded, bytesTotal, percentage + "%");
-                    },
-                    onSuccess: () => {
-                        console.log("Download complete");
-                        resolve();
-                    }
-                });
+            const upload = new tus.Upload(fileStream, {
+                endpoint: tusUpload.uploadUrl!,
+                retryDelays: [0, 1000, 3000, 5000],
+                headers: tusUpload.metadataToDict(),
+                uploadSize: 3000,
+                onError: (error: any) => {
+                    console.log("Failed because: " + error);
+                    reject(error);
+                },
+                onProgress: (bytesUploaded: number, bytesTotal: number) => {
+                    const percentage = (bytesUploaded / bytesTotal * 100).toFixed(2);
+                    console.log(bytesUploaded, bytesTotal, percentage + "%");
+                },
+                onSuccess: () => {
+                    console.log("Download complete");
+                    resolve();
+                }
             });
+
+            upload.start();
         });
     }
 
@@ -80,3 +81,5 @@ class FileUploader {
     }
 
 }
+
+export default FileUploader;
