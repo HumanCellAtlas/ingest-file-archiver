@@ -2,12 +2,13 @@
  * Created by rolando on 01/08/2018.
  */
 import {Listener, ConnectionProperties} from "./listener";
+import IHandler from "./handlers/handler";
 
 class FileValidationListener {
     exchange: string;
     exchangeType: string;
     queue: string;
-    handler: IHandler;
+    handler: IHandler
     listener: Listener;
 
     constructor(rabbitConnectionProperties: ConnectionProperties, exchange: string, queue: string, handler: IHandler, exchangeType: string) {

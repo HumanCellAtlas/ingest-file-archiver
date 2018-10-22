@@ -1,5 +1,5 @@
 import Promise from "bluebird";
-
+import {IHandler, AmqpMessage} from "./handler";
 
 class NewFileHandler implements IHandler {
     constructor() {

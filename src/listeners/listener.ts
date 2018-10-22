@@ -3,6 +3,7 @@
  */
 import amqp from "amqplib";
 import Promise from "bluebird";
+import {IHandler, AmqpMessage} from "./handlers/handler";
 
 type ConnectionProperties = {scheme: string, host: string, port: string};
 
