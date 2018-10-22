@@ -1,4 +1,4 @@
-import {key} from "../../node_modules/aws-sdk/clients/signer";
+import * as stream from "stream";
 
 type TusMetadata = {key: string, value: string | number | boolean}
 
@@ -8,7 +8,7 @@ class TusUpload {
     uploadUrl?: string;
     metadata: TusMetadata[];
     chunkSize?: number;
-    fileStream?: Buffer;
+    fileStream?: stream.Readable;
 
     constructor() {
         this.metadata = [];
