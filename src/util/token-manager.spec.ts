@@ -4,10 +4,11 @@ import AapTokenClient from "./aap-token-client";
 import Promise from "bluebird";
 
 describe("Token manager tests", () => {
-    test("it should retrieve a token on initial getToken()", () => {
-        const mockTokenClient: ITokenClient = new AapTokenClient({username: "blah", password: "blah"}, "http://mock-auth-url");
+    const mockTokenClient: ITokenClient = new AapTokenClient({username: "blah", password: "blah"}, "http://mock-auth-url");
+    const mockToken = "mocktoken";
+    const mockToken2 = "mockToken2";
 
-        const mockToken = "mocktoken";
+    test("it should retrieve a token on initial getToken()", () => {
         const retrieveTokenMock = jest.spyOn(mockTokenClient, "retrieveToken");
         retrieveTokenMock.mockImplementation(() => {return Promise.resolve(mockToken)});
 
@@ -20,10 +21,6 @@ describe("Token manager tests", () => {
     });
 
     test("it should cache a token",() => {
-        const mockTokenClient: ITokenClient = new AapTokenClient({username: "blah", password: "blah"}, "http://mock-auth-url");
-
-        const mockToken = "mocktoken";
-        const mockToken2 = "mocktoken2";
         const retrieveTokenMock = jest.spyOn(mockTokenClient, "retrieveToken");
         retrieveTokenMock.mockImplementation(() => {return Promise.resolve(mockToken)});
 
@@ -38,10 +35,6 @@ describe("Token manager tests", () => {
     });
 
     test("it should re-retrieve a token upon cache expiry", () => {
-        const mockTokenClient: ITokenClient = new AapTokenClient({username: "blah", password: "blah"}, "http://mock-auth-url");
-
-        const mockToken = "mocktoken";
-        const mockToken2 = "mockToken2";
         const retrieveTokenMock = jest.spyOn(mockTokenClient, "retrieveToken");
         retrieveTokenMock.mockImplementation(() => {return Promise.resolve(mockToken)});
 
