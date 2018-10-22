@@ -8,6 +8,7 @@ class TusUpload {
     uploadUrl?: string;
     metadata: TusMetadata[];
     chunkSize?: number;
+    fileStream?: Buffer;
 
     constructor() {
         this.metadata = [];
