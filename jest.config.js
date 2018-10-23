@@ -70,7 +70,8 @@ module.exports = {
   moduleFileExtensions: [
     "ts",
     "tsx",
-    "js"
+    "js",
+    "json"
   ],
 
   // A map from regular expressions to module names that allow to stub out resources with a single module
