@@ -25,6 +25,7 @@
     "@types/tus-js-client": "^1.4.1",
     "jest": "^23.6.0",
     "ts-jest": "^23.10.4",
+    "tus-node-server": "^0.3.2",
     "typescript": "^3.0.3"
   },
   "scripts": {
