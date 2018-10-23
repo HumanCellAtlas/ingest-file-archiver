@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "amqplib": "^0.5.2",
-    "aws-sdk": "^2.321.0",
+    "aws-sdk": "^2.340.0",
     "bluebird": "^3.5.2",
     "config": "^2.0.1",
     "debug": "~2.6.9",
