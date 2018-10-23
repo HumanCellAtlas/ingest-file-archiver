@@ -45,7 +45,8 @@ class FileUploader {
                 endpoint: tusUpload.uploadUrl!,
                 retryDelays: [0, 1000, 3000, 5000],
                 headers: tusUpload.metadataToDict(),
-                uploadSize: 3000,
+                chunkSize: 50,
+                uploadSize: 2852,
                 onError: (error: any) => {
                     console.log("Failed because: " + error);
                     reject(error);
