@@ -9,6 +9,10 @@ class TusUpload {
     metadata: TusMetadata[];
     chunkSize?: number;
     fileStream?: stream.Readable;
+    submission?: string;
+    s3Bucket? : string;
+    s3Key? : string;
+    s3Url?: URL;
 
     constructor() {
         this.metadata = [];
@@ -34,9 +38,25 @@ class TusUpload {
         return metadataDict;
     }
 
+    setS3Url(s3Url: URL) {
+        this.s3Url = s3Url;
+        const s3Object = TusUpload._s3BucketAndKeyFromS3url(s3Url);
+        this.s3Bucket = s3Object.bucket;
+        this.s3Key = s3Object.key;
+    }
+
+    static _s3BucketAndKeyFromS3url(s3Url: URL) : {bucket: string, key: string }{
+        return {
+          bucket: s3Url.host,
+          key: s3Url.href
+        };
+    }
+
     static metadataPair(k: string, v: string | number | boolean) : TusMetadata {
         return {key: k, value: v};
     }
+
+
 
 
 }
