@@ -1,9 +1,15 @@
 {
   "AUTH": {
-    "authUrl": "AAP_URL",
-    "credentials": {
-      "username": "AAP_USERNAME",
-      "password": "AAP_PASSWORD"
+    "usi": {
+      "authUrl": "AAP_URL",
+      "credentials": {
+        "username": "AAP_USERNAME",
+        "password": "AAP_PASSWORD"
+      }
+    },
+    "s3": {
+      "accessId": "S3_ACCESS_KEY_ID",
+      "secretKey": "S3_ACCESS_KEY_SECRET"
     }
   }
 }

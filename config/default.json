@@ -1,9 +1,15 @@
 {
   "AUTH": {
-    "authUrl" : "https://explore.api.aai.ebi.ac.uk/auth",
-    "credentials": {
-      "username": "REDACTED",
-      "password": "REDACTED"
+    "usi": {
+      "authUrl" : "https://explore.api.aai.ebi.ac.uk/auth",
+      "credentials": {
+        "username": "REDACTED",
+        "password": "REDACTED"
+      }
+    },
+    "s3": {
+      "accessKeyId": "REDACTED",
+      "accessKeySecret": "REDACTED"
     }
   },
   "USI": {
