@@ -1,8 +1,10 @@
-import tus, {Upload, UploadOptions} from "tus-js-client";
+import tus, {Upload} from "tus-js-client";
 import TokenManager from "./token-manager";
 import TusUpload from "../model/tus-upload";
 import Promise from "bluebird";
 import fs from "fs";
+import AWS, {S3} from "aws-sdk";
+import configuration from "config";
 
 /**
  *
@@ -20,13 +22,15 @@ class FileUploader {
      *
      * Given a TusUpload object, uploads the specified file
      */
-    stageLocalFile(tusUpload: TusUpload, submission: string) : Promise<Upload> {
+    stageLocalFile(tusUpload: TusUpload) : Promise<Upload> {
         tusUpload.fileStream = fs.createReadStream(tusUpload.filePath!);
+
+        return this.doUpload(tusUpload);
 
         return this._getToken()
             .then(token => {return FileUploader._insertToken(tusUpload, token)})
-            .then(tusUpload => {return FileUploader._insertSubmission(tusUpload, submission)})
-            .then(tusUpload => {return this._doUpload(tusUpload)});
+            .then(tusUpload => {return FileUploader._insertSubmission(tusUpload, tusUpload.submission!)})
+            .then(tusUpload => {return this.doUpload(tusUpload)});
     }
 
     /**
@@ -35,13 +39,22 @@ class FileUploader {
      * @param tusUpload
      * @private
      */
+    doUpload(tusUpload: TusUpload) : Promise<Upload>{
+        return this._getToken()
+            .then(token => {return FileUploader._insertToken(tusUpload, token)})
+            .then(tusUpload => {return FileUploader._insertSubmission(tusUpload, tusUpload.submission!)})
+            .then(tusUpload => {return this._doUpload(tusUpload)});
+    }
+
     _doUpload(tusUpload: TusUpload) : Promise<Upload>{
         return new Promise<Upload>((resolve, reject) => {
             // TODO: maintainers of tus-js-client need to add streams as an allowable type for tus file sources
             // @ts-ignore TODO: tus.io typescript maintainers need to allow fileStreams here
             const fileStream:Blob = tusUpload.fileStream!;
 
-            const upload = new tus.Upload(fileStream, {
+            let upload: Upload;
+
+            upload = new tus.Upload(fileStream, {
                 endpoint: tusUpload.uploadUrl!,
                 retryDelays: [0, 1000, 3000, 5000],
                 headers: tusUpload.metadataToDict(),
@@ -57,7 +70,7 @@ class FileUploader {
                 },
                 onSuccess: () => {
                     console.log("Download complete");
-                    resolve();
+                    resolve(upload);
                 }
             });
 
@@ -65,8 +78,18 @@ class FileUploader {
         });
     }
 
-    stageS3File(s3FileLocatorObj: any) {
-        return null; // TODO: do this
+    stageS3File(tusUpload: TusUpload) : Promise<Upload> {
+        const bucket = tusUpload.s3Bucket!;
+        const key = tusUpload.s3Key!;
+
+        return new Promise((resolve, reject) => {
+            const config = this._aws_config();
+            const s3Service = new S3(config);
+            tusUpload.fileStream = s3Service.getObject({Bucket: bucket, Key: key}).createReadStream();
+            this.doUpload(tusUpload).then((upload) => {
+                resolve(upload);
+            })
+        })
     }
 
    static _insertToken(tusUpload: TusUpload, token: string) : Promise<TusUpload> {
@@ -81,6 +104,18 @@ class FileUploader {
         return this.tokenManager.getToken();
     }
 
+    _aws_config() : AWS.Config {
+        const accessKeyId: string = configuration.get("AUTH.s3.accessKeyId");
+        const accessKeySecret: string = configuration.get("AUTH.s3.accessKeySecret");
+        const config: AWS.Config = new AWS.Config();
+
+        config.update({
+            credentials: new AWS.Credentials(accessKeyId, accessKeySecret),
+            region: "us-east-1"
+        });
+
+        return config;
+    }
 }
 
 export default FileUploader;
