@@ -71,7 +71,7 @@ class FileUploader {
     _doUpload(tusUpload: TusUpload) : Promise<Upload>{
         return new Promise<Upload>((resolve, reject) => {
             // TODO: maintainers of tus-js-client need to add streams as an allowable type for tus file sources
-            // @ts-ignore TODO: tus.io typescript maintainers need to allow fileStreams here
+            // @ts-ignore TODO: tus.io typescript maintainers need to allow Readable streams here
             const fileStream:Blob = tusUpload.fileStream!;
 
             let upload: Upload;
