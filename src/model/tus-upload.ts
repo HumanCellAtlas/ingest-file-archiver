@@ -8,6 +8,7 @@ class TusUpload {
     uploadUrl?: string;
     metadata: TusMetadata[];
     chunkSize?: number;
+    fileSize?: number;
     fileStream?: stream.Readable;
     submission?: string;
     s3Bucket? : string;
@@ -48,7 +49,7 @@ class TusUpload {
     static _s3BucketAndKeyFromS3url(s3Url: URL) : {bucket: string, key: string }{
         return {
           bucket: s3Url.host,
-          key: s3Url.href
+          key: s3Url.pathname.substr(1)
         };
     }
 
