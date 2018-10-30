@@ -46,7 +46,7 @@ class FileUploader {
             s3Service.headObject({Bucket: bucket, Key: key}).promise()
                 .then((s3Obj) => {
                     tusUpload.fileSize = s3Obj.ContentLength!.valueOf();
-                    tusUpload.fileStream = s3Service.headObject({Bucket: bucket, Key: key}).createReadStream();
+                    tusUpload.fileStream = s3Service.getObject({Bucket: bucket, Key: key}).createReadStream();
 
                     this.doUpload(tusUpload).then((upload) => {
                         resolve(upload);
@@ -80,7 +80,7 @@ class FileUploader {
                 endpoint: tusUpload.uploadUrl!,
                 retryDelays: [0, 1000, 3000, 5000],
                 headers: tusUpload.metadataToDict(),
-                chunkSize: 50,
+                chunkSize: 100000,
                 uploadSize: tusUpload.fileSize,
                 onError: (error: any) => {
                     console.log("Failed because: " + error);
