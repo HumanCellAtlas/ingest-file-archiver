@@ -70,9 +70,15 @@ describe("Uploader tests", () => {
     const tokenManager = new TokenManager(mockTokenClient, 20 * 6 * 1000, 5 * 6 * 1000);
 
 
-    test("it should store a file on a tus-server", () => {
-        startTestTusServer(tusTestServer);
+    beforeEach(() => {
+       startTestTusServer(tusTestServer);
+    });
 
+    afterEach(() => {
+        stopTestTusServer(tusTestServer);
+    });
+
+    test("it should store a file on a tus-server", () => {
         let fileUploadedSuccessfully = false;
 
         tusTestServer.tusServer!.on(tus.EVENTS.EVENT_FILE_CREATED, (event: any) => {
@@ -99,7 +105,6 @@ describe("Uploader tests", () => {
             .then((tusUpload) => {return Promise.delay(3000)})
             .then(() => {
                 expect(fileUploadedSuccessfully).toBeTruthy();
-                stopTestTusServer(tusTestServer);
                 return Promise.resolve();
             })
             .catch(err => fail(err));
@@ -107,8 +112,6 @@ describe("Uploader tests", () => {
 
     test("it should stream a file from AWS", () => {
         jest.setTimeout(15000);
-
-        startTestTusServer(tusTestServer);
 
         const cloudUrl = "s3://org-humancellatlas-upload-integration/f9abf88a-d0cf-426f-b5f5-361234bda717/R1.fastq.gz";
         const tusUpload = new TusUpload();
@@ -132,7 +135,6 @@ describe("Uploader tests", () => {
                 return Promise.delay(2000)
                     .then(() => {
                         expect(fileUploadedSuccessfully).toBeTruthy();
-                        stopTestTusServer(tusTestServer);
                     });
             });
     });
