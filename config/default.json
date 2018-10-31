@@ -27,7 +27,8 @@
       "messaging" : {
         "exchange" : "ingest.file.staged.exchange",
         "queueName" : "ingest.file.create.staged",
-        "exchangeType": "fanout"
+        "exchangeType": "fanout",
+        "routingKey": ""
       }
     }
   }

@@ -11,5 +11,20 @@
       "accessKeyId": "S3_ACCESS_KEY_ID",
       "accessKeySecret": "S3_ACCESS_KEY_SECRET"
     }
+  },
+  "AMQP": {
+    "newFile" : {
+      "connection" : {
+        "scheme": "ARCHIVER_RABBIT_SCHEME",
+        "host" : "ARCHIVER_RABBIT_HOST",
+        "port" : "ARCHIVER_RABBIT_PORT"
+      },
+      "messaging" : {
+        "exchange" : "ARCHIVER_EXCHANGE",
+        "exchangeType": "ARCHIVER_EXCHANGE_TYPE",
+        "queueName" : "ARCHIVER_QUEUE_NAME",
+        "routingKey": "ARCHIVER_ROUTING_KEY"
+      }
+    }
   }
 }
