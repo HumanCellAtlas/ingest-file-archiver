@@ -15,7 +15,7 @@ privileges for S3.
 
 ## Running
 
-This component is configured to listen to serialized JSON messages from a RabbitMQ queue with the following format. Each
+This component is configured to listen to serialized JSON messages from an AMQP queue with the following format. Each
 message should have a `submission` and `s3Url` key.
 ```javascript
 {
@@ -25,4 +25,10 @@ message should have a `submission` and `s3Url` key.
 ```
 
 Environment variables for connecting to the RabbitMQ broker:
-``
+
+ `ARCHIVER_RABBIT_SCHEME` - protocol to use for connecting to the RabbitMQ broker. Either "amqp" or "amqps" expected
+ `ARCHIVER_RABBIT_HOST` - hostname of the server running the AMQP broker
+ `ARCHIVER_RABBIT_PORT` - hostname of the server running the AMQP broker
+ `ARCHIVER_EXCHANGE` - name of the amqp exchange for the listener queue
+ `ARCHIVER_EXCHANGE_TYPE` - the exchange type...
+ `ARCHIVER_QUEUE_NAME` - queue name
