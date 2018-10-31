@@ -7,6 +7,7 @@ import Promise from "bluebird";
 import * as path from "path";
 import {Server} from "http";
 import url from "url";
+import fs from "fs";
 
 
 const tus: any = require("tus-node-server");
@@ -94,7 +95,10 @@ describe("Uploader tests", () => {
 
         const fileUploader = new FileUploader(tokenManager);
         const tusUpload = new TusUpload();
-        tusUpload.filePath = path.resolve(__dirname, "./file-uploader.ts");
+        const filePath = path.resolve(__dirname, "./mockfile.txt");
+        fs.writeFileSync(filePath, "hello world");
+
+        tusUpload.filePath = filePath;
         tusUpload.uploadUrl = "http://" + tusTestServer.host + ":" + tusTestServer.port + "/files";
         tusUpload.fileName = "mock-file-name";
         tusUpload.submission = mockSubmission;
@@ -102,9 +106,10 @@ describe("Uploader tests", () => {
         jest.setTimeout(15000);
 
         return fileUploader.stageLocalFile(tusUpload)
-            .then((tusUpload) => {return Promise.delay(3000)})
+            .then(() => {return Promise.delay(3000)})
             .then(() => {
                 expect(fileUploadedSuccessfully).toBeTruthy();
+                fs.unlinkSync(tusUpload.filePath!);
                 return Promise.resolve();
             })
             .catch(err => fail(err));
