@@ -49,7 +49,7 @@ describe("Token manager tests", () => {
             return Promise.resolve(mockToken)
         });
 
-        const tokenManager = new TokenManager(mockTokenClient, 1000, 100);
+        const tokenManager = new TokenManager(mockTokenClient, 1000, 500);
         return tokenManager.getToken()
             .then(() => {
                 retrieveTokenMock.mockImplementation(() => {
@@ -67,7 +67,7 @@ describe("Token manager tests", () => {
                 return Promise.resolve();
             }) // assert using cached token after 0ms delay
             .then(() => {
-                return Promise.delay(2000)
+                return Promise.delay(600)
             })
             .then(() => {
                 return tokenManager.getToken()

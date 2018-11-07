@@ -37,7 +37,7 @@ class TokenManager {
     }
 
     isExpired() : boolean {
-        return new Date().getTime() - this.tokenCache.refreshPeriodMs > this.tokenCache.cachedTimeMs! + this.tokenCache.tokenDurationMs
+        return new Date().getTime() + this.tokenCache.refreshPeriodMs > this.tokenCache.cachedTimeMs! + this.tokenCache.tokenDurationMs
     }
 }
 
