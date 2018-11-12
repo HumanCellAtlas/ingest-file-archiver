@@ -71,11 +71,11 @@ describe("Uploader tests", () => {
     const tokenManager = new TokenManager(mockTokenClient, 20 * 6 * 1000, 5 * 6 * 1000);
 
 
-    beforeEach(() => {
+    beforeAll(() => {
        startTestTusServer(tusTestServer);
     });
 
-    afterEach(() => {
+    afterAll(() => {
         stopTestTusServer(tusTestServer);
     });
 
@@ -114,6 +114,42 @@ describe("Uploader tests", () => {
             })
             .catch(err => fail(err));
     });
+
+    test("it should populate tus metadata headers for upload requests", () => {
+        let metadataPopulated = "";
+
+        tusTestServer.tusServer!.on(tus.EVENTS.EVENT_FILE_CREATED, (event: any) => {
+            metadataPopulated = event.file.upload_metadata;
+        });
+
+
+        const retrieveTokenMock = jest.spyOn(mockTokenClient, "retrieveToken");
+        retrieveTokenMock.mockImplementation(() => {
+            return Promise.resolve("mocktoken")
+        });
+
+        const fileUploader = new FileUploader(tokenManager);
+        const tusUpload = new TusUpload();
+        const filePath = path.resolve(__dirname, "./mockfile.txt");
+        fs.writeFileSync(filePath, "hello world");
+
+        tusUpload.filePath = filePath;
+        tusUpload.uploadUrl = "http://" + tusTestServer.host + ":" + tusTestServer.port + "/files";
+        tusUpload.fileName = "mock-file-name";
+        tusUpload.submission = mockSubmission;
+
+        jest.setTimeout(15000);
+
+        return fileUploader.stageLocalFile(tusUpload)
+            .then(() => {return Promise.delay(3000)})
+            .then(() => {
+                expect(metadataPopulated).toBeTruthy();
+                fs.unlinkSync(tusUpload.filePath!);
+                return Promise.resolve();
+            })
+            .catch(err => fail(err));
+    });
+
 
     test("it should stream a file from AWS", () => {
         jest.setTimeout(15000);

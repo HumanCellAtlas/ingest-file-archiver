@@ -28,7 +28,12 @@ class TusUpload {
     }
 
     addSubmission(submission: string) : TusUpload {
-        this.metadata.push(TusUpload.metadataPair("submission", submission));
+        this.metadata.push(TusUpload.metadataPair("submissionID", submission));
+        return this;
+    }
+
+    addFileName(name: string) : TusUpload {
+        this.metadata.push(TusUpload.metadataPair("name", name));
         return this;
     }
 

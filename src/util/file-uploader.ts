@@ -1,9 +1,9 @@
-import tus, {Upload} from "tus-js-client";
+import tus, {Upload, UploadOptions} from "tus-js-client";
 import TokenManager from "./token-manager";
 import TusUpload from "../model/tus-upload";
 import Promise from "bluebird";
 import fs from "fs";
-import AWS, {S3} from "aws-sdk";
+import {S3, Credentials, Config} from "aws-sdk";
 import configuration from "config";
 
 /**
@@ -65,6 +65,7 @@ class FileUploader {
         return this._getToken()
             .then(token => {return FileUploader._insertToken(tusUpload, token)})
             .then(tusUpload => {return FileUploader._insertSubmission(tusUpload, tusUpload.submission!)})
+            .then(tusUpload => {return FileUploader._insertFileName(tusUpload, tusUpload.fileName!)})
             .then(tusUpload => {return this._doUpload(tusUpload)});
     }
 
@@ -79,7 +80,8 @@ class FileUploader {
             upload = new tus.Upload(fileStream, {
                 endpoint: tusUpload.uploadUrl!,
                 retryDelays: [0, 1000, 3000, 5000],
-                headers: tusUpload.metadataToDict(),
+                // @ts-ignore: TODO: tus-js-client typescript not being maintained
+                metadata: tusUpload.metadataToDict(),
                 chunkSize: 100000,
                 uploadSize: tusUpload.fileSize,
                 onError: (error: any) => {
@@ -108,6 +110,10 @@ class FileUploader {
         return Promise.resolve(tusUpload.addSubmission(submission));
     }
 
+    static _insertFileName(tusUpload: TusUpload, submission: string) : Promise<TusUpload> {
+        return Promise.resolve(tusUpload.addSubmission(submission));
+    }
+
     _getToken() : Promise<string> {
         return this.tokenManager.getToken();
     }
@@ -115,10 +121,10 @@ class FileUploader {
     _aws_config() : AWS.Config {
         const accessKeyId: string = configuration.get("AUTH.s3.accessKeyId");
         const accessKeySecret: string = configuration.get("AUTH.s3.accessKeySecret");
-        const config: AWS.Config = new AWS.Config();
+        const config: AWS.Config = new Config();
 
         config.update({
-            credentials: new AWS.Credentials(accessKeyId, accessKeySecret),
+            credentials: new Credentials(accessKeyId, accessKeySecret),
             region: "us-east-1"
         });
 
