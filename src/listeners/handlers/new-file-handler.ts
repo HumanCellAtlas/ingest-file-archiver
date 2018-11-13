@@ -16,7 +16,7 @@ class NewFileHandler implements IHandler {
     handle(msg: AmqpMessage) : Promise<void> {
         try {
             const msgContent: FileUploadMessage = JSON.parse(msg.messageBytes);
-            const tusUploadRequest  = NewFileHandler._uploadRequestFromUploadMessage(msgContent)
+            const tusUploadRequest  = NewFileHandler._uploadRequestFromUploadMessage(msgContent);
             return this.fileUploader.stageS3File(tusUploadRequest)
                 .then(() => {return Promise.resolve()});
         } catch (err) {
