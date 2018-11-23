@@ -2,20 +2,18 @@ import * as stream from "stream";
 
 type TusMetadata = {key: string, value: string | number | boolean}
 
+export type FileInfo = {fileName: string, filePath?: string, fileSize?: number, fileStream?: stream.Readable}
+
 class TusUpload {
-    fileName?: string
-    filePath?: string;
-    uploadUrl?: string;
+    fileInfo: FileInfo;
+    uploadUrl: string;
     metadata: TusMetadata[];
     chunkSize?: number;
-    fileSize?: number;
-    fileStream?: stream.Readable;
     submission?: string;
-    s3Bucket? : string;
-    s3Key? : string;
-    s3Url?: URL;
 
-    constructor() {
+    constructor(fileInfo: FileInfo, uploadUrl: string) {
+        this.fileInfo = fileInfo;
+        this.uploadUrl = uploadUrl;
         this.metadata = [];
     }
 
@@ -44,26 +42,8 @@ class TusUpload {
         return metadataDict;
     }
 
-    setS3Url(s3Url: URL) {
-        this.s3Url = s3Url;
-        const s3Object = TusUpload._s3BucketAndKeyFromS3url(s3Url);
-        this.s3Bucket = s3Object.bucket;
-        this.s3Key = s3Object.key;
-    }
-
-    static _s3BucketAndKeyFromS3url(s3Url: URL) : {bucket: string, key: string }{
-        return {
-          bucket: s3Url.host,
-          key: s3Url.pathname.substr(1)
-        };
-    }
-
     static metadataPair(k: string, v: string | number | boolean) : TusMetadata {
         return {key: k, value: v};
     }
-
-
-
-
 }
 export default TusUpload;

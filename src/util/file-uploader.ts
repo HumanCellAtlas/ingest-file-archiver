@@ -5,6 +5,10 @@ import Promise from "bluebird";
 import fs from "fs";
 import {S3, Credentials, Config} from "aws-sdk";
 import configuration from "config";
+import {S3TusUpload, S3Auth} from "../model/s3-tus-upload";
+import * as stream from "stream";
+import * as https from "https";
+import {RequestOptions} from "https";
 
 /**
  *
@@ -23,8 +27,8 @@ class FileUploader {
      * Given a TusUpload object, uploads the specified file
      */
     stageLocalFile(tusUpload: TusUpload) : Promise<Upload> {
-        tusUpload.fileSize = fs.statSync(tusUpload.filePath!).size;
-        tusUpload.fileStream = fs.createReadStream(tusUpload.filePath!);
+        tusUpload.fileInfo.fileSize = fs.statSync(tusUpload.fileInfo.filePath!).size;
+        tusUpload.fileInfo.fileStream = fs.createReadStream(tusUpload.fileInfo.filePath!);
 
         return this.doUpload(tusUpload);
     }
@@ -33,26 +37,32 @@ class FileUploader {
      *
      * Uploads a file from S3, referenced in the TusUpload obj
      *
-     * @param tusUpload
+     * @param s3TusUpload
      */
-    stageS3File(tusUpload: TusUpload) : Promise<Upload> {
-        const bucket = tusUpload.s3Bucket!;
-        const key = tusUpload.s3Key!;
+    stageS3File(s3TusUpload: S3TusUpload) : Promise<tus.Upload> {
+        const bucket = s3TusUpload.s3Info.s3Location.s3Bucket;
+        const key = s3TusUpload.s3Info.s3Location.s3Bucket!;
 
         return new Promise((resolve, reject) => {
-            const config = this._aws_config();
-            const s3Service = new S3(config);
+            // const config = this._awsConfigFromS3AuthInfo(s3TusUpload.s3Info.s3AuthInfo!);
+            // const s3Service = new S3(config);
+            // s3TusUpload.tusUpload.fileInfo.fileStream = s3Service.getObject({Bucket: bucket, Key: key}).createReadStream();
 
-            s3Service.headObject({Bucket: bucket, Key: key}).promise()
-                .then((s3Obj) => {
-                    tusUpload.fileSize = s3Obj.ContentLength!.valueOf();
-                    tusUpload.fileStream = s3Service.getObject({Bucket: bucket, Key: key}).createReadStream();
+            const requestReadablePromise = this.fetchS3(s3TusUpload.s3Info.s3Location.s3Url!);
 
-                    this.doUpload(tusUpload).then((upload) => {
-                        resolve(upload);
-                    })
-                });
-        })
+            requestReadablePromise.then(requestReadable => {
+               s3TusUpload.tusUpload.fileInfo.fileStream = requestReadable;
+                this.doUpload(s3TusUpload.tusUpload).then(upload => {resolve(upload)});
+            });
+        });
+    }
+
+    fetchS3(s3Url: URL) : Promise<stream.Readable> {
+        return new Promise<stream.Readable>(((resolve, reject) => {
+            https.get(s3Url, (res: stream.Readable) => {
+                resolve(res);
+            });
+        }));
     }
 
     /**
@@ -65,7 +75,7 @@ class FileUploader {
         return this._getToken()
             .then(token => {return FileUploader._insertToken(tusUpload, token)})
             .then(tusUpload => {return FileUploader._insertSubmission(tusUpload, tusUpload.submission!)})
-            .then(tusUpload => {return FileUploader._insertFileName(tusUpload, tusUpload.fileName!)})
+            .then(tusUpload => {return FileUploader._insertFileName(tusUpload, tusUpload.fileInfo.fileName!)})
             .then(tusUpload => {return this._doUpload(tusUpload)});
     }
 
@@ -73,7 +83,7 @@ class FileUploader {
         return new Promise<Upload>((resolve, reject) => {
             // TODO: maintainers of tus-js-client need to add streams as an allowable type for tus file sources
             // @ts-ignore TODO: tus.io typescript maintainers need to allow Readable streams here
-            const fileStream:Blob = tusUpload.fileStream!;
+            const fileStream:Blob = tusUpload.fileInfo.fileStream!;
 
             let upload: Upload;
 
@@ -83,7 +93,7 @@ class FileUploader {
                 // @ts-ignore: TODO: tus-js-client typescript not being maintained
                 metadata: tusUpload.metadataToDict(),
                 chunkSize: 100000,
-                uploadSize: tusUpload.fileSize,
+                uploadSize: tusUpload.fileInfo.fileSize,
                 onError: (error: any) => {
                     console.log("Failed because: " + error);
                     reject(error);
@@ -116,6 +126,25 @@ class FileUploader {
 
     _getToken() : Promise<string> {
         return this.tokenManager.getToken();
+    }
+
+    _awsConfigFromS3AuthInfo(s3Auth: S3Auth) : AWS.Config {
+        const config: AWS.Config = new Config();
+
+        config.update({
+            credentials: FileUploader._awsCredentialsFromSessionToken(s3Auth.accessKeyId, s3Auth.secret!),
+            region: "us-east-1"
+        });
+
+        return config;
+    }
+
+    static _awsCredentialsFromSessionToken(accessKeyId: string, securityToken: string) : AWS.Credentials {
+        return new Credentials({
+            accessKeyId: accessKeyId!,
+            sessionToken: securityToken,
+            secretAccessKey: ""
+        });
     }
 
     _aws_config() : AWS.Config {
