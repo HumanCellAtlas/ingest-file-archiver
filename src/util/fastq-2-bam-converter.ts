@@ -1,16 +1,6 @@
-import {Fastq2BamConvertRequest} from "../common/types";
+import {Fastq2BamConvertRequest, Fastq2BamParams} from "../common/types";
 import {spawn} from "child_process";
 import Promise from "bluebird";
-
-type Fastq2BamParams = {
-    schema: string,
-    outputBamFilename: string,
-    inputFastqs: {
-        r1: string,
-        r2: string,
-        index?: string
-    }
-}
 
 const _10XV2 = "10xV2";
 
@@ -21,13 +11,16 @@ class Fastq2BamConverter{
         this.fastq2BamPath = fastq2BamPath;
     }
 
+    convertFastq2Bam(convertRequest: Fastq2BamConvertRequest) : Promise<number> {
+        return this._convertFastq2Bam(convertRequest, this.fastq2BamPath);
+    }
+
     /**
      *
      * Performs a fastq-bam conversion, returns the result code in a process
      *
      * @param convertRequest
      * @param fastq2BamPath
-     * @private
      */
     _convertFastq2Bam(convertRequest: Fastq2BamConvertRequest, fastq2BamPath: string) : Promise<number> {
         return new Promise<number>((resolve, reject) => {
@@ -82,3 +75,5 @@ class Fastq2BamConverter{
     }
 
 }
+
+export default Fastq2BamConverter;
