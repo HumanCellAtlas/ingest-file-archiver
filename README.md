@@ -1,7 +1,5 @@
 # ingest-file-archiver
-Service for storage of HCA sequencing data files into the EBI archives
-
-
+Service for storing HCA sequencing data in the EBI archives.
 
 ## Setup
 
