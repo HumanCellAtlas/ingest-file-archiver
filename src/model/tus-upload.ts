@@ -1,8 +1,6 @@
 import * as stream from "stream";
-
-type TusMetadata = {key: string, value: string | number | boolean}
-
-export type FileInfo = {fileName: string, filePath?: string, fileSize?: number, fileStream?: stream.Readable}
+import ts, {FileInfo} from "../common/types";
+import TusMetadata = ts.TusMetadata;
 
 class TusUpload {
     fileInfo: FileInfo;

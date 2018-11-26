@@ -1,14 +1,13 @@
 import request from "request-promise";
 import Promise from "bluebird";
 import ITokenClient from "./token-client";
-
-type Credentials = {username: string, password: string}
+import {AAPCredentials} from "../common/types";
 
 class AapTokenClient implements ITokenClient {
-    aapCredentials: Credentials;
+    aapCredentials: AAPCredentials;
     authUrl: string;
 
-    constructor(aapCredentials: Credentials, authUrl: string) {
+    constructor(aapCredentials: AAPCredentials, authUrl: string) {
         this.aapCredentials = aapCredentials;
         this.authUrl = authUrl;
     }

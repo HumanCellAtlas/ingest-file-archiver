@@ -1,8 +1,8 @@
 import TusUpload from "./tus-upload";
+import S3Info = ts.S3Info;
+import S3Location = ts.S3Location;
+import S3Auth = ts.S3Auth;
 
-type S3Location = {s3Bucket: string, s3Key: string, s3Url?: URL}
-export type S3Auth = {accessKeyId: string, secret?: string, sessionToken?: string}
-export type S3Info = {s3Location: S3Location, s3AuthInfo? : S3Auth}
 
 class S3TusUpload {
     s3Info: S3Info;

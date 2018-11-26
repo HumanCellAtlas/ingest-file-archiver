@@ -8,10 +8,9 @@ import * as path from "path";
 import {Server} from "http";
 import url from "url";
 import fs from "fs";
-import {S3TusUpload, S3Info, S3Auth} from "../model/s3-tus-upload";
-
-"../model/s3-tus-upload";
-
+import {S3TusUpload} from "../model/s3-tus-upload";
+import ts from "../common/types";
+import S3Info = ts.S3Info;
 
 const tus: any = require("tus-node-server");
 

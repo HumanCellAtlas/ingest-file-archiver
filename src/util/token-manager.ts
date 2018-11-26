@@ -1,12 +1,11 @@
 import Promise from "bluebird";
 import ITokenClient from "./token-client";
+import {TokenCache} from "../common/types";
 
 /**
  * Manages the HCA AAP token required for authn&authz in the USI
  *
  * */
-
-type TokenCache = {token?: string, tokenDurationMs: number, cachedTimeMs?: number, refreshPeriodMs: number}
 
 class TokenManager {
     tokenCache: TokenCache;
