@@ -2,7 +2,7 @@ const config = require('config');
 
 const TokenManager = require("src/util/token-manager");
 const NewFileListener = require("src/listeners/new-file-listener");
-const NewFileHandler = require("src/listeners/handlers/new-file-handler");
+const NewFileHandler = require("src/listeners/handlers/local-file-upload-handler");
 
 
 /* ----------------------------------- */

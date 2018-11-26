@@ -14,7 +14,7 @@ namespace ts {
     export type Fastq2BamConvertRequest = {
         r1Path: string,
         r2Path: string,
-        indexPath: string,
+        indexPath?: string,
         outputName: string
     }
 
@@ -57,7 +57,7 @@ namespace ts {
 
     export type FileInfo = {
         fileName: string,
-        filePath?: string,
+        filePath: string,
         fileSize?: number,
         fileStream?: stream.Readable
     }
@@ -74,7 +74,15 @@ namespace ts {
         refreshPeriodMs: number
     }
 
-
+    export type Fastq2BamParams = {
+        schema: string,
+        outputBamFilename: string,
+        inputFastqs: {
+            r1: string,
+            r2: string,
+            index?: string
+        }
+    }
 }
 
 export = ts;
