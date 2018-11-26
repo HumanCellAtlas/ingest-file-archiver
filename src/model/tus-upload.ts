@@ -1,6 +1,5 @@
 import * as stream from "stream";
-import ts, {FileInfo} from "../common/types";
-import TusMetadata = ts.TusMetadata;
+import {FileInfo, TusMetadata} from "../common/types";
 
 class TusUpload {
     fileInfo: FileInfo;
