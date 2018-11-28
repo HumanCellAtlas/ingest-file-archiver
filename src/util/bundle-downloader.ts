@@ -52,3 +52,5 @@ class BundleDownloader {
         return BundleDownloader._dssDownloadArgs().concat(["--bundle-uuid", bundleUuid, "--replica", replica]);
     }
 }
+
+export default BundleDownloader;
