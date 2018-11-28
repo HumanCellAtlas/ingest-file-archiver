@@ -45,12 +45,7 @@ class FileUploader {
         const key = s3TusUpload.s3Info.s3Location.s3Bucket!;
 
         return new Promise((resolve, reject) => {
-            // const config = this._awsConfigFromS3AuthInfo(s3TusUpload.s3Info.s3AuthInfo!);
-            // const s3Service = new S3(config);
-            // s3TusUpload.tusUpload.fileInfo.fileStream = s3Service.getObject({Bucket: bucket, Key: key}).createReadStream();
-
             const requestReadablePromise = this.fetchS3(s3TusUpload.s3Info.s3Location.s3Url!);
-
             requestReadablePromise.then(requestReadable => {
                s3TusUpload.tusUpload.fileInfo.fileStream = requestReadable;
                 this.doUpload(s3TusUpload.tusUpload).then(upload => {resolve(upload)});
