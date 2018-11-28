@@ -83,6 +83,17 @@ namespace ts {
             index?: string
         }
     }
+
+    export type BundleDownloadRequest = {
+        bundleUuid: string,
+        cloudReplica: "aws"| "gcp",
+        environment? : string
+    }
+
+    export type BundleDownloadParams = {
+        bundleUuid: string,
+        replica: string
+    }
 }
 
 export = ts;
