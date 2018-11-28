@@ -33,7 +33,7 @@ class BundleDownloader {
                         const bundleDownloadRequest: BundleDownloadRequest = {
                             bundleUuid: bundleUuid,
                             cloudReplica: "aws",
-                            bundleDir: bundleBaseDir
+                            bundleBaseDir: bundleBaseDir
                         };
 
                         BundleDownloader._downloadBundle(this.hcaCliPath, bundleDownloadRequest)
@@ -52,7 +52,7 @@ class BundleDownloader {
             const runParams: BundleDownloadParams = BundleDownloader._bundleDownloadParamsFromBundleDownloadRequest(bundleDownloadRequest);
             const runArgs = BundleDownloader._bundleDownloadArgsFromParams(runParams);
 
-            const bundleDownloadProcess = spawn(hcaCliPath, runArgs);
+            const bundleDownloadProcess = spawn(hcaCliPath, runArgs, {cwd: bundleDownloadRequest.bundleBaseDir});
 
             bundleDownloadProcess.on("exit", (code: number, signal: string) => {
                 resolve();

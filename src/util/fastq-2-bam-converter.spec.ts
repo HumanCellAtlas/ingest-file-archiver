@@ -18,7 +18,8 @@ describe("fastq-bam conversion tests", () => {
         r1Path: mockR1Path,
         r2Path: mockR2Path,
         indexPath: mockIndexPath,
-        outputName: mockOutputName
+        outputName: mockOutputName,
+        outputDir: mockBaseDir
     };
 
     it("should generate correct input params for fastq-bam conversion", () => {

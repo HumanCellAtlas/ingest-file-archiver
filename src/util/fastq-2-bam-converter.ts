@@ -25,7 +25,7 @@ class Fastq2BamConverter{
             const runParams: Fastq2BamParams = Fastq2BamConverter.fastq2BamParamsFromConvertRequest(convertRequest);
             const runArgs = Fastq2BamConverter.paramsToArgs(runParams);
 
-            const fastq2BamProcess = spawn(fastq2BamPath, runArgs);
+            const fastq2BamProcess = spawn(fastq2BamPath, runArgs, {cwd: convertRequest.outputDir});
 
             fastq2BamProcess.on("exit", (code: number, signal: string) => {
                 resolve(code);

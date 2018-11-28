@@ -73,7 +73,8 @@ class LocalFileUploadHandler implements IHandler {
                 r1Path: `${fileDirBasePath}/${inputsFastqs[0]}`,
                 r2Path:  `${fileDirBasePath}/${inputsFastqs[1]}`,
                 outputName:  `${fileDirBasePath}/${uploadMessageConversionMap.outputName}`,
-                indexPath: (numInputFastqs === 3) ? `${fileDirBasePath}/${inputsFastqs[2]}` : undefined
+                indexPath: (numInputFastqs === 3) ? `${fileDirBasePath}/${inputsFastqs[2]}` : undefined,
+                outputDir: fileDirBasePath
             }
         }
     }

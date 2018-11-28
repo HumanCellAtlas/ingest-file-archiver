@@ -15,7 +15,8 @@ namespace ts {
         r1Path: string,
         r2Path: string,
         indexPath?: string,
-        outputName: string
+        outputName: string,
+        outputDir: string;
     }
 
     export type FileUploadMessage = {
@@ -87,6 +88,7 @@ namespace ts {
     export type BundleDownloadRequest = {
         bundleUuid: string,
         cloudReplica: "aws"| "gcp",
+        bundleBaseDir: string,
         environment? : string
     }
 
