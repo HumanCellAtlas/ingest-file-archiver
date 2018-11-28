@@ -14,6 +14,35 @@ class BundleDownloader {
         this.hcaCliPath = hcaCliPath;
     }
 
+
+    /**
+     *
+     * Downloads a bundle if it doesn't exist
+     *
+     * @param bundleUuid
+     * @param bundleBaseDir
+     * @param environment
+     */
+    assertBundle(bundleUuid: string, bundleBaseDir: string, environment?: string) : Promise<void> {
+        return new Promise<void>( (resolve) => {
+            BundleDownloader._checkBundleExists(bundleUuid, bundleBaseDir)
+                .then((itExists) => {
+                    if(itExists) {
+                        resolve();
+                    } else {
+                        const bundleDownloadRequest: BundleDownloadRequest = {
+                            bundleUuid: bundleUuid,
+                            cloudReplica: "aws",
+                            bundleDir: bundleBaseDir
+                        };
+
+                        BundleDownloader._downloadBundle(this.hcaCliPath, bundleDownloadRequest)
+                            .then(() => resolve());
+                    }
+                })
+        });
+    }
+
     downloadBundle(bundleDownloadRequest: BundleDownloadRequest): Promise<void> {
         return BundleDownloader._downloadBundle(this.hcaCliPath, bundleDownloadRequest);
     }
@@ -32,6 +61,21 @@ class BundleDownloader {
             bundleDownloadProcess.on("error", err => {
                 reject(err);
             })
+        });
+    }
+
+    static _checkBundleExists(bundleUuid: string, bundleBaseDir: string) : Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            const bundleDir = `${bundleBaseDir}/${bundleUuid}`;
+            const checkBundleExistsProcess = spawn("ls", [bundleDir]);
+
+            checkBundleExistsProcess.on("exit", (code: number, signal: string) => {
+               resolve(code == 0);
+            });
+
+            checkBundleExistsProcess.on("error", err => {
+                reject(err);
+            });
         });
     }
 
