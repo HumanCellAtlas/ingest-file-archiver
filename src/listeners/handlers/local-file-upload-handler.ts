@@ -24,15 +24,15 @@ class LocalFileUploadHandler implements IHandler {
     handle(msg: AmqpMessage) : Promise<void> {
             return new Promise<void>((resolve, reject) => {
                 LocalFileUploadHandler._parseAmqpMessage(msg)
-                    .then((msgContent) => {
-                        LocalFileUploadHandler._maybeDownloadBundle(msgContent, this.bundleDirBasePath, this.bundleDownloader)
-                            .then(() => {
-                                LocalFileUploadHandler._maybeBamConvert(msgContent, this.bundleDirBasePath, this.fastq2BamConverter)
-                                .then(() => {return LocalFileUploadHandler._upload(msgContent, this.fileUploader, this.bundleDirBasePath)})
-                                .then(() => resolve());
-                            });
-                    });
+                    .then((msgContent) => {return this.doLocalFileUpload(msgContent)});
             });
+    }
+
+    doLocalFileUpload(fileUploadMessage: FileUploadMessage): Promise<void>{
+        return LocalFileUploadHandler._maybeDownloadBundle(fileUploadMessage, this.bundleDirBasePath, this.bundleDownloader)
+            .then(() => { return LocalFileUploadHandler._maybeBamConvert(fileUploadMessage, this.bundleDirBasePath, this.fastq2BamConverter)})
+            .then(() => { return LocalFileUploadHandler._upload(fileUploadMessage, this.fileUploader, this.bundleDirBasePath)})
+            .then(() => { return Promise.resolve()});
     }
 
     static _parseAmqpMessage(msg: AmqpMessage) : Promise<FileUploadMessage> {
