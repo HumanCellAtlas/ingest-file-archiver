@@ -38,6 +38,5 @@ describe("fastq-bam conversion tests", () => {
         expect(fastq2BamArgsString).toContain(`-1 ${mockR1Path}`);
         expect(fastq2BamArgsString).toContain(`-2 ${mockR2Path}`);
         expect(fastq2BamArgsString).toContain(`-3 ${mockIndexPath}`);
-
     })
 });
