@@ -6,25 +6,31 @@ import url from "url";
 import {ConversionMap, Fastq2BamConvertRequest, FileUploadMessage} from "../../common/types";
 import Fastq2BamConverter from "../../util/fastq-2-bam-converter";
 import R from "ramda";
+import BundleDownloader from "../../util/bundle-downloader";
 
 class LocalFileUploadHandler implements IHandler {
     fileUploader: FileUploader;
     fastq2BamConverter: Fastq2BamConverter;
-    fileDirBasePath: string;
+    bundleDownloader: BundleDownloader;
+    bundleDirBasePath: string;
 
-    constructor(fileUploader: FileUploader, fastq2BamConverter: Fastq2BamConverter, fileDirBasePath: string) {
+    constructor(fileUploader: FileUploader, fastq2BamConverter: Fastq2BamConverter, bundleDownloader: BundleDownloader, bundleDirBasePath: string) {
         this.fileUploader = fileUploader;
         this.fastq2BamConverter = fastq2BamConverter;
-        this.fileDirBasePath = fileDirBasePath;
+        this.bundleDownloader = bundleDownloader;
+        this.bundleDirBasePath = bundleDirBasePath;
     }
 
     handle(msg: AmqpMessage) : Promise<void> {
             return new Promise<void>((resolve, reject) => {
                 LocalFileUploadHandler._parseAmqpMessage(msg)
                     .then((msgContent) => {
-                        LocalFileUploadHandler._maybeBamConvert(msgContent, this.fileDirBasePath, this.fastq2BamConverter)
-                            .then(() => {return LocalFileUploadHandler._upload(msgContent, this.fileUploader, this.fileDirBasePath)})
-                            .then(() => resolve());
+                        LocalFileUploadHandler._maybeDownloadBundle(msgContent, this.bundleDirBasePath, this.bundleDownloader)
+                            .then(() => {
+                                LocalFileUploadHandler._maybeBamConvert(msgContent, this.bundleDirBasePath, this.fastq2BamConverter)
+                                .then(() => {return LocalFileUploadHandler._upload(msgContent, this.fileUploader, this.bundleDirBasePath)})
+                                .then(() => resolve());
+                            });
                     });
             });
     }
@@ -36,6 +42,10 @@ class LocalFileUploadHandler implements IHandler {
             console.error("Failed to parse message content (ignoring): " + msg.messageBytes);
             return Promise.reject(err);
         }
+    }
+
+    static _maybeDownloadBundle(fileUploadMessage: FileUploadMessage, fileDirBasePath: string, bundleDownloader: BundleDownloader): Promise<void> {
+        return bundleDownloader.assertBundle(fileUploadMessage.bundleUuid, fileDirBasePath);
     }
 
     static _maybeBamConvert(fileUploadMessage: FileUploadMessage, fileDirBasePath: string, fastq2BamConverter: Fastq2BamConverter) : Promise<void> {
