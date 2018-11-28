@@ -5,7 +5,7 @@ import TusUpload from "../../model/tus-upload";
 import url from "url";
 import {ConversionMap, Fastq2BamConvertRequest, FileUploadMessage} from "../../common/types";
 import Fastq2BamConverter from "../../util/fastq-2-bam-converter";
-import R from "ramda"
+import R from "ramda";
 
 class LocalFileUploadHandler implements IHandler {
     fileUploader: FileUploader;
@@ -70,10 +70,10 @@ class LocalFileUploadHandler implements IHandler {
             throw new Error(`ERROR: Bam conversion must have at least 2 input files, but ${numInputFastqs} found: ${String(uploadMessageConversionMap.inputs)}`)
         } else {
             return {
-                r1Path: fileDirBasePath + inputsFastqs[0],
-                r2Path:  fileDirBasePath + inputsFastqs[1],
-                outputName:  fileDirBasePath + uploadMessageConversionMap.outputName,
-                indexPath: (numInputFastqs === 3) ? inputsFastqs[2] : undefined
+                r1Path: `${fileDirBasePath}/${inputsFastqs[0]}`,
+                r2Path:  `${fileDirBasePath}/${inputsFastqs[1]}`,
+                outputName:  `${fileDirBasePath}/${uploadMessageConversionMap.outputName}`,
+                indexPath: (numInputFastqs === 3) ? `${fileDirBasePath}/${inputsFastqs[2]}` : undefined
             }
         }
     }
@@ -100,7 +100,8 @@ class LocalFileUploadHandler implements IHandler {
     }
 
     static _submissionUuidFromSubmissionUri(submissionUri: url.URL): string {
-        return submissionUri.pathname.split("/")[1];
+        const splitPath: string[] = submissionUri.pathname.split("/");
+        return splitPath[splitPath.length - 1];
     }
 }
 

@@ -7,7 +7,7 @@ namespace ts {
      * describes how to convert fastqs into bams
      */
     export type ConversionMap = {
-        inputs: [string],
+        inputs: string[],
         outputName: string
     }
 
@@ -19,7 +19,7 @@ namespace ts {
     }
 
     export type FileUploadMessage = {
-        fileNames: [string],
+        fileNames: string[],
         bundleUuid: string,
         submissionUrl: string,
         usiUrl: string,

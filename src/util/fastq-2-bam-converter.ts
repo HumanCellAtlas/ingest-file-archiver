@@ -2,8 +2,6 @@ import {Fastq2BamConvertRequest, Fastq2BamParams} from "../common/types";
 import {spawn} from "child_process";
 import Promise from "bluebird";
 
-const _10XV2 = "10xV2";
-
 class Fastq2BamConverter{
     fastq2BamPath: string;
 
@@ -24,11 +22,7 @@ class Fastq2BamConverter{
      */
     _convertFastq2Bam(convertRequest: Fastq2BamConvertRequest, fastq2BamPath: string) : Promise<number> {
         return new Promise<number>((resolve, reject) => {
-            const runParams: Fastq2BamParams = {
-                schema: Fastq2BamConverter.bamSchemaParams(),
-                outputBamFilename: convertRequest.outputName,
-                inputFastqs: Fastq2BamConverter.inputFastqParams(convertRequest.r1Path, convertRequest.r2Path, convertRequest.indexPath)
-            };
+            const runParams: Fastq2BamParams = Fastq2BamConverter.fastq2BamParamsFromConvertRequest(convertRequest);
             const runArgs = Fastq2BamConverter.paramsToArgs(runParams);
 
             const fastq2BamProcess = spawn(fastq2BamPath, runArgs);
@@ -43,12 +37,15 @@ class Fastq2BamConverter{
         });
     }
 
-
     /**
-     * Assuming 10xV2 for now
+     * Just assuming 10xV2 for now
      */
-    static bamSchemaParams(): string {
-        return _10XV2;
+    static bamSchemaParams(convertRequest: Fastq2BamConvertRequest): string {
+        return Fastq2BamConverter._10XV2Schema();
+    }
+
+    static _10XV2Schema(): string {
+        return "10xV2";
     }
 
     static inputFastqParams(r1Path: string, r2Path: string, indexPath?: string): Fastq2BamParams["inputFastqs"] {
@@ -60,20 +57,27 @@ class Fastq2BamConverter{
     }
 
     static paramsToArgs(params: Fastq2BamParams): string[] {
-        const runArgs: string[] = [];
+        let runArgs: string[] = [];
 
-        runArgs.concat(["-s", params.schema]);
-        runArgs.concat(["-b", params.outputBamFilename]);
+        runArgs = runArgs.concat(["-s", params.schema]);
+        runArgs = runArgs.concat(["-b", params.outputBamFilename]);
 
         if(params.inputFastqs.index) {
-            runArgs.concat(["-1", params.inputFastqs.r1, "-2", params.inputFastqs.r2, "-3", params.inputFastqs.index]);
+            runArgs = runArgs.concat(["-1", params.inputFastqs.r1, "-2", params.inputFastqs.r2, "-3", params.inputFastqs.index]);
         } else {
-            runArgs.concat(["-1", params.inputFastqs.r1, "-2", params.inputFastqs.r2]);
+            runArgs = runArgs.concat(["-1", params.inputFastqs.r1, "-2", params.inputFastqs.r2]);
         }
 
         return runArgs;
     }
 
+    static fastq2BamParamsFromConvertRequest(convertRequest: Fastq2BamConvertRequest): Fastq2BamParams {
+        return {
+            schema: Fastq2BamConverter.bamSchemaParams(convertRequest),
+            outputBamFilename: convertRequest.outputName,
+            inputFastqs: Fastq2BamConverter.inputFastqParams(convertRequest.r1Path, convertRequest.r2Path, convertRequest.indexPath)
+        }
+    }
 }
 
 export default Fastq2BamConverter;

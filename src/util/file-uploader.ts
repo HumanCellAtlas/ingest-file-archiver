@@ -5,10 +5,11 @@ import Promise from "bluebird";
 import fs from "fs";
 import {S3, Credentials, Config} from "aws-sdk";
 import configuration from "config";
-import {S3TusUpload, S3Auth} from "../model/s3-tus-upload";
 import * as stream from "stream";
 import * as https from "https";
 import {RequestOptions} from "https";
+import {S3TusUpload} from "../model/s3-tus-upload";
+import {S3Auth} from "../common/types";
 
 /**
  *
