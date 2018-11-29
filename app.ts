@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import * as config from "config";
+import config from "config";
 
 import LocalFileUploadHandler from "./src/listeners/handlers/local-file-upload-handler";
 import FileUploader from "./src/util/file-uploader";
@@ -9,6 +9,7 @@ import Fastq2BamConverter from "./src/util/fastq-2-bam-converter";
 import BundleDownloader from "./src/util/bundle-downloader";
 import R from "ramda";
 import Promise from "bluebird";
+import TokenManager from "./src/util/token-manager";
 
 const args = process.argv;
 
@@ -34,8 +35,8 @@ type UploadPlan = {
 /* ----------------------------------- */
 
 const tokenClient = (() => {
-    const aapCredentials: AAPCredentials = config.get("AUTH.credentials");
-    const authUrl: string = config.get("AUTH.authUrl");
+    const aapCredentials: AAPCredentials = config.get("AUTH.usi.credentials");
+    const authUrl: string = config.get("AUTH.usi.authUrl");
 
     return new AapTokenClient(aapCredentials, authUrl);
 })();
@@ -53,11 +54,11 @@ const fastq2BamConverter = (() => {
 })();
 
 const bundleDownloader = (() => {
-    return new BundleDownloader("hca");
+    return new BundleDownloader("/Users/rolando/development/hca/ingestion-infrastructure/ingestion/ingest-file-archiver/hca-cli/bin/hca");
 })();
 
 const bundleDirBasePath = (() => {
-    return args[2];
+    return args[3];
 })();
 
 const localFileUploadHandler = (() => {
@@ -98,7 +99,6 @@ processUploadJobsSequential = (uploadJobs: UploadJob[]) : Promise<void> => {
         });
     }
 };
-
 
 const start = () => {
     processUploadJobsSequential(uploadPlan.jobs)

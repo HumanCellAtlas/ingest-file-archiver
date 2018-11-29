@@ -7,6 +7,7 @@ import {ConversionMap, Fastq2BamConvertRequest, FileUploadMessage} from "../../c
 import Fastq2BamConverter from "../../util/fastq-2-bam-converter";
 import R from "ramda";
 import BundleDownloader from "../../util/bundle-downloader";
+import {Upload} from "tus-js-client";
 
 class LocalFileUploadHandler implements IHandler {
     fileUploader: FileUploader;
@@ -89,7 +90,7 @@ class LocalFileUploadHandler implements IHandler {
         }
     }
 
-    static _upload(fileUploadMessage: FileUploadMessage, fileUploader: FileUploader, fileDirBasePath: string): Promise<void[]> {
+    static _upload(fileUploadMessage: FileUploadMessage, fileUploader: FileUploader, fileDirBasePath: string): Promise<Upload[]> {
         const tusUploads = LocalFileUploadHandler._uploadRequestsFromUploadMessage(fileUploadMessage, fileDirBasePath);
         const fn = (tusUpload: TusUpload) => fileUploader.stageLocalFile(tusUpload);
         const uploadPromises = R.map(fn, tusUploads);
