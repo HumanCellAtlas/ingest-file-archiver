@@ -94,16 +94,15 @@ processUploadJobsSequential = (uploadJobs: UploadJob[]) : Promise<void> => {
 
         return new Promise<void>(resolve => {
             localFileUploadHandler.doLocalFileUpload(uploadMessage)
-                .then(() => resolve(processUploadJobsSequential(R.tail(uploadJobs))));
+                .then(() => {return processUploadJobsSequential(R.tail(uploadJobs))});
         });
     }
 };
 
 
 const start = () => {
-    processUploadJobsSequential(uploadPlan.jobs);
+    processUploadJobsSequential(uploadPlan.jobs)
+        .then(() => process.exit(0));
 };
 
 start();
-
-
