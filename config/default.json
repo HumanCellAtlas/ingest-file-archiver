@@ -1,4 +1,8 @@
 {
+  "FILES": {
+    "bundleBaseDir": "<set through env var>",
+    "uploadPlanPath": "<set through env var>"
+  },
   "AUTH": {
     "usi": {
       "authUrl" : "https://explore.api.aai.ebi.ac.uk/auth",

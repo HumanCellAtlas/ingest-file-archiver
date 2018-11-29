@@ -1,4 +1,8 @@
 {
+  "FILES": {
+    "bundleBaseDir": "BUNDLE_BASE_DIR",
+    "uploadPlanPath": "UPLOAD_PLAN_PATH"
+  }
   "AUTH": {
     "usi": {
       "authUrl": "AAP_URL",
