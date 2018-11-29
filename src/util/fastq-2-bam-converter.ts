@@ -1,6 +1,7 @@
-import {Fastq2BamConvertRequest, Fastq2BamParams} from "../common/types";
+import {Fastq2BamConvertRequest, Fastq2BamParams, FastqReadInfo} from "../common/types";
 import {spawn} from "child_process";
 import Promise from "bluebird";
+import R from "ramda";
 
 class Fastq2BamConverter{
     fastq2BamPath: string;
@@ -48,12 +49,15 @@ class Fastq2BamConverter{
         return "10xV2";
     }
 
-    static inputFastqParams(r1Path: string, r2Path: string, indexPath?: string): Fastq2BamParams["inputFastqs"] {
-        return {
-            r1: r1Path,
-            r2: r2Path,
-            index: indexPath
-        }
+    static inputFastqParams(readsInfo: FastqReadInfo[]): Fastq2BamParams["inputFastqs"] {
+        const readFilesFilterFn = (readInfo: FastqReadInfo) => readInfo.readIndex.startsWith("read");
+        const indexFilesFilterFn = (readInfo: FastqReadInfo) => readInfo.readIndex.startsWith("index");
+        const sortByReadIndexFn = R.sortBy(R.prop("readIndex"));
+
+        const sortedReadFastqs = sortByReadIndexFn(R.filter(readFilesFilterFn, readsInfo));
+        const sortedIndexFastqs = sortByReadIndexFn(R.filter(indexFilesFilterFn, readsInfo));
+
+        return R.map((fastqReadInfo) => fastqReadInfo.fileName, sortedReadFastqs.concat(sortedIndexFastqs));
     }
 
     static paramsToArgs(params: Fastq2BamParams): string[] {
@@ -62,11 +66,18 @@ class Fastq2BamConverter{
         runArgs = runArgs.concat(["-s", params.schema]);
         runArgs = runArgs.concat(["-b", params.outputBamFilename]);
 
-        if(params.inputFastqs.index) {
-            runArgs = runArgs.concat(["-1", params.inputFastqs.r1, "-2", params.inputFastqs.r2, "-3", params.inputFastqs.index]);
-        } else {
-            runArgs = runArgs.concat(["-1", params.inputFastqs.r1, "-2", params.inputFastqs.r2]);
-        }
+        // args for the input fastqs
+        const inputFastqs: string[] = params.inputFastqs;
+        const fastqArgNums: string[] = R.map(argNum => `-${String(argNum)}`, R.range(1, inputFastqs.length + 1));
+        const argNumFastqPairs: string[][] = R.zip(fastqArgNums, inputFastqs);
+
+        runArgs = runArgs.concat(
+            R.reduce(
+                (acc: string[] , item: string[]) => { return acc.concat(item)},
+                [],
+                argNumFastqPairs
+            )
+        );
 
         return runArgs;
     }
@@ -75,7 +86,7 @@ class Fastq2BamConverter{
         return {
             schema: Fastq2BamConverter.bamSchemaParams(convertRequest),
             outputBamFilename: convertRequest.outputName,
-            inputFastqs: Fastq2BamConverter.inputFastqParams(convertRequest.r1Path, convertRequest.r2Path, convertRequest.indexPath)
+            inputFastqs: Fastq2BamConverter.inputFastqParams(convertRequest.reads)
         }
     }
 }

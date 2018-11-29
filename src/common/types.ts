@@ -12,11 +12,14 @@ namespace ts {
     }
 
     export type Fastq2BamConvertRequest = {
-        r1Path: string,
-        r2Path: string,
-        indexPath?: string,
+        reads: FastqReadInfo[],
         outputName: string,
         outputDir: string;
+    }
+
+    export type FastqReadInfo = {
+        readIndex: string,
+        fileName: string
     }
 
     export type FileUploadMessage = {
@@ -78,11 +81,7 @@ namespace ts {
     export type Fastq2BamParams = {
         schema: string,
         outputBamFilename: string,
-        inputFastqs: {
-            r1: string,
-            r2: string,
-            index?: string
-        }
+        inputFastqs: string[]
     }
 
     export type BundleDownloadRequest = {

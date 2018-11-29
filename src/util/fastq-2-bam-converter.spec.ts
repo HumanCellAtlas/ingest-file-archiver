@@ -15,16 +15,27 @@ describe("fastq-bam conversion tests", () => {
     const mockIndexPath = `${mockBaseDir}/${mockIndexName}`;
 
     const convertRequest:Fastq2BamConvertRequest = {
-        r1Path: mockR1Path,
-        r2Path: mockR2Path,
-        indexPath: mockIndexPath,
+        reads: [
+            {
+                readIndex: "read1",
+                fileName: mockR1Path
+            },
+            {
+                readIndex: "read2",
+                fileName: mockR2Path
+            },
+            {
+                readIndex: "index1",
+                fileName: mockIndexPath
+            }
+        ],
         outputName: mockOutputName,
         outputDir: mockBaseDir
     };
 
     it("should generate correct input params for fastq-bam conversion", () => {
         const fastq2BamParams: Fastq2BamParams = Fastq2BamConverter.fastq2BamParamsFromConvertRequest(convertRequest);
-        expect(fastq2BamParams.inputFastqs).toEqual({r1: mockR1Path, r2: mockR2Path, index: mockIndexPath});
+        expect(fastq2BamParams.inputFastqs).toEqual([mockR1Path, mockR2Path, mockIndexPath]);
         expect(fastq2BamParams.schema).toEqual("10xV2");
         expect(fastq2BamParams.outputBamFilename).toEqual(mockOutputName);
     });
