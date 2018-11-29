@@ -24,7 +24,10 @@ type UploadJob = {
     bundle_uuid: string,
     conversion: {
         output_name: string,
-        inputs: string[]
+        inputs: {
+            "name": string,
+            "read_index": string
+        }[]
     }
 }
 
@@ -79,7 +82,7 @@ const uploadMessageForJob = (uploadJob: UploadJob): FileUploadMessage => {
         fileNames: uploadJob.files,
         usiUrl: uploadJob.usi_api_url,
         conversionMap: {
-            inputs: uploadJob.conversion.inputs,
+            inputs: R.map((conversionInput) => {return {readIndex: conversionInput.read_index, fileName: conversionInput.name} } , uploadJob.conversion.inputs),
             outputName: uploadJob.conversion.output_name
         }
     }

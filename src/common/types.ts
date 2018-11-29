@@ -7,7 +7,7 @@ namespace ts {
      * describes how to convert fastqs into bams
      */
     export type ConversionMap = {
-        inputs: string[],
+        inputs: FastqReadInfo[],
         outputName: string
     }
 

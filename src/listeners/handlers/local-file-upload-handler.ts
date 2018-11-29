@@ -81,10 +81,8 @@ class LocalFileUploadHandler implements IHandler {
             throw new Error(`ERROR: Bam conversion must have at least 2 input files, but ${numInputFastqs} found: ${String(uploadMessageConversionMap.inputs)}`)
         } else {
             return {
-                r1Path: `${fileDirBasePath}/${inputsFastqs[0]}`,
-                r2Path:  `${fileDirBasePath}/${inputsFastqs[1]}`,
+                reads: uploadMessageConversionMap.inputs,
                 outputName:  `${fileDirBasePath}/${uploadMessageConversionMap.outputName}`,
-                indexPath: (numInputFastqs === 3) ? `${fileDirBasePath}/${inputsFastqs[2]}` : undefined,
                 outputDir: fileDirBasePath
             }
         }

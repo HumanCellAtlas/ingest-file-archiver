@@ -39,57 +39,36 @@ describe("Local file uploader tests", () => {
         });
     });
 
-
-    it("should reject bam conversion requests for a list of fastq files with length > 3 or length < 2", () => {
-        const mockFileNamesTooMany = ["mockFileName1", "mockFileName2", "mockFileName3", "mockFileName4"];
-        const mockFileNamesTooFew = ["mockFileName1"];
-
-
-        const mockOutputName = "mockbam.bam";
-        const mockFileBasePathDir = "/data/myfiles";
-
-        const mockConversionMapTooManyInputs: ConversionMap = {
-            inputs: mockFileNamesTooMany,
-            outputName: mockOutputName
-        };
-
-        const mockConversionMapTooFewInputs: ConversionMap = {
-            inputs: mockFileNamesTooFew,
-            outputName: mockOutputName
-        };
-
-        expect(() => LocalFileUploadHandler._generateBamConvertRequest(mockConversionMapTooManyInputs, mockFileBasePathDir)).toThrow(Error);
-        expect(() => LocalFileUploadHandler._generateBamConvertRequest(mockConversionMapTooFewInputs, mockFileBasePathDir)).toThrow(Error);
-
-    });
-
-    it("should generate bam conversion requests for 2 or 3 fastqs", () => {
-        const mockFileNamesPair = ["mockFileName1", "mockFileName2"];
-        const mockFileNamesPairWithIndex = ["mockFileName1", "mockFileName2", "mockFileName3"];
+    it("should generate bam conversion requests", () => {
+        const mockR1 = "mockR1.fastq.gz";
+        const mockR2 = "mockR2.fastq.gz";
+        const mockIndex = "mockI.fastq.gz";
 
         const mockOutputName = "mockbam.bam";
         const mockFileBasePathDir = "/data/myfiles";
 
         const mockConversionMapPair: ConversionMap = {
-            inputs: mockFileNamesPair,
-            outputName: mockOutputName
-        };
-
-        const mockConversionMapPairWithIndex: ConversionMap = {
-            inputs: mockFileNamesPairWithIndex,
+            inputs: [
+                {
+                    readIndex: "read1",
+                    fileName: mockR1
+                },
+                {
+                    readIndex: "read2",
+                    fileName: mockR2,
+                },
+                {
+                    readIndex: "index1",
+                    fileName: mockIndex
+                }
+            ],
             outputName: mockOutputName
         };
 
         const convertRequestPair = LocalFileUploadHandler._generateBamConvertRequest(mockConversionMapPair, mockFileBasePathDir);
-        expect(convertRequestPair.r1Path).toEqual(`${mockFileBasePathDir}/mockFileName1`);
-        expect(convertRequestPair.r2Path).toEqual(`${mockFileBasePathDir}/mockFileName2`);
-        expect(convertRequestPair.indexPath).toBeUndefined();
+        expect(convertRequestPair.reads).toContainEqual({readIndex: "read1", fileName: mockR1});
+        expect(convertRequestPair.reads).toContainEqual({readIndex: "read2", fileName: mockR2});
+        expect(convertRequestPair.reads).toContainEqual({readIndex: "index1", fileName: mockIndex});
         expect(convertRequestPair.outputName).toEqual(`${mockFileBasePathDir}/${mockOutputName}`);
-
-        const convertRequestPairWithIndex = LocalFileUploadHandler._generateBamConvertRequest(mockConversionMapPairWithIndex, mockFileBasePathDir);
-        expect(convertRequestPairWithIndex.r1Path).toEqual(`${mockFileBasePathDir}/mockFileName1`);
-        expect(convertRequestPairWithIndex.r2Path).toEqual(`${mockFileBasePathDir}/mockFileName2`);
-        expect(convertRequestPairWithIndex.indexPath).toEqual(`${mockFileBasePathDir}/mockFileName3`);
-        expect(convertRequestPairWithIndex.outputName).toEqual(`${mockFileBasePathDir}/${mockOutputName}`);
     });
 });
