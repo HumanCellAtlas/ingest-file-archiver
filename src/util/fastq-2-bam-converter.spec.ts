@@ -17,12 +17,12 @@ describe("fastq-bam conversion tests", () => {
     const convertRequest:Fastq2BamConvertRequest = {
         reads: [
             {
-                readIndex: "read1",
-                fileName: mockR1Path
-            },
-            {
                 readIndex: "read2",
                 fileName: mockR2Path
+            },
+            {
+                readIndex: "read1",
+                fileName: mockR1Path
             },
             {
                 readIndex: "index1",
