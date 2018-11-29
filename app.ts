@@ -61,7 +61,7 @@ const bundleDownloader = (() => {
 })();
 
 const bundleDirBasePath = (() => {
-    return args[3];
+    return config.get("FILES.bundleBaseDir") as string;
 })();
 
 const localFileUploadHandler = (() => {
@@ -69,7 +69,7 @@ const localFileUploadHandler = (() => {
 })();
 
 
-const uploadPlanFilePath: string = args[2];
+const uploadPlanFilePath: string = config.get("FILES.uploadPlanPath");
 const uploadPlanFileData: Buffer = fs.readFileSync(uploadPlanFilePath);
 const uploadPlan: UploadPlan = JSON.parse(uploadPlanFileData.toString());
 
