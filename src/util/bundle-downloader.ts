@@ -28,8 +28,10 @@ class BundleDownloader {
             BundleDownloader._checkBundleExists(bundleUuid, bundleBaseDir)
                 .then((itExists) => {
                     if(itExists) {
+                        console.log(`Bundle with uuid ${bundleUuid} already exists at ${bundleBaseDir}`);
                         resolve();
                     } else {
+                        console.log(`Downloading bundle with uuid ${bundleUuid}`);
                         const bundleDownloadRequest: BundleDownloadRequest = {
                             bundleUuid: bundleUuid,
                             cloudReplica: "aws",
