@@ -60,7 +60,7 @@ class LocalFileUploadHandler implements IHandler {
 
     static _doBamConversion(fastq2BamConverter: Fastq2BamConverter, bamConvertRequest: Fastq2BamConvertRequest) : Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            fastq2BamConverter.convertFastq2Bam(bamConvertRequest)
+            fastq2BamConverter.assertBam(bamConvertRequest)
                 .then((exitCode: number) => {
                     if(exitCode ===  1) {
                         resolve();
@@ -73,18 +73,10 @@ class LocalFileUploadHandler implements IHandler {
     }
 
     static _generateBamConvertRequest(uploadMessageConversionMap: ConversionMap, fileDirBasePath: string) : Fastq2BamConvertRequest {
-        const inputsFastqs = uploadMessageConversionMap.inputs;
-        const numInputFastqs: number = inputsFastqs.length;
-        if(numInputFastqs > 3) {
-            throw new Error(`ERROR: Bam conversion must have at most 3 input files, but ${numInputFastqs} found: ${String(uploadMessageConversionMap.inputs)}`)
-        } else if(numInputFastqs < 2) {
-            throw new Error(`ERROR: Bam conversion must have at least 2 input files, but ${numInputFastqs} found: ${String(uploadMessageConversionMap.inputs)}`)
-        } else {
-            return {
-                reads: uploadMessageConversionMap.inputs,
-                outputName:  `${fileDirBasePath}/${uploadMessageConversionMap.outputName}`,
-                outputDir: fileDirBasePath
-            }
+        return {
+            reads: uploadMessageConversionMap.inputs,
+            outputName:  `${fileDirBasePath}/${uploadMessageConversionMap.outputName}`,
+            outputDir: fileDirBasePath
         }
     }
 
@@ -101,7 +93,7 @@ class LocalFileUploadHandler implements IHandler {
 
         for(let i = 0; i < uploadMessage.fileNames.length; i ++) {
             const fileName = uploadMessage.fileNames[i];
-            const tusUpload = new TusUpload({fileName: fileName, filePath: `${fileDirBasePath}/${fileName}`}, uploadFileEndpoint);
+            const tusUpload = new TusUpload({fileName: fileName, filePath: `${fileDirBasePath}/${uploadMessage.bundleUuid}/${fileName}`}, uploadFileEndpoint);
             tusUpload.submission = LocalFileUploadHandler._submissionUuidFromSubmissionUri(new url.URL(uploadMessage.submissionUrl));
             tusUploads.push(tusUpload);
         }

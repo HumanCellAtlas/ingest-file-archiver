@@ -6,6 +6,7 @@
 import Promise from "bluebird";
 import {spawn} from "child_process";
 import {BundleDownloadParams, BundleDownloadRequest} from "../common/types";
+import FileExistenceChecker from "./file-existence-checker";
 
 class BundleDownloader {
     hcaCliPath: string;
@@ -67,18 +68,7 @@ class BundleDownloader {
     }
 
     static _checkBundleExists(bundleUuid: string, bundleBaseDir: string) : Promise<boolean> {
-        return new Promise<boolean>((resolve, reject) => {
-            const bundleDir = `${bundleBaseDir}/${bundleUuid}`;
-            const checkBundleExistsProcess = spawn("ls", [bundleDir]);
-
-            checkBundleExistsProcess.on("exit", (code: number, signal: string) => {
-               resolve(code == 0);
-            });
-
-            checkBundleExistsProcess.on("error", err => {
-                reject(err);
-            });
-        });
+        return FileExistenceChecker.fileExists(`${bundleBaseDir}/${bundleUuid}`);
     }
 
     static _bundleDownloadParamsFromBundleDownloadRequest(downloadRequest: BundleDownloadRequest): BundleDownloadParams {

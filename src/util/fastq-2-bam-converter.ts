@@ -2,6 +2,7 @@ import {Fastq2BamConvertRequest, Fastq2BamParams, FastqReadInfo} from "../common
 import {spawn} from "child_process";
 import Promise from "bluebird";
 import R from "ramda";
+import FileExistenceChecker from "./file-existence-checker";
 
 class Fastq2BamConverter{
     fastq2BamPath: string;
@@ -10,8 +11,25 @@ class Fastq2BamConverter{
         this.fastq2BamPath = fastq2BamPath;
     }
 
-    convertFastq2Bam(convertRequest: Fastq2BamConvertRequest) : Promise<number> {
-        return this._convertFastq2Bam(convertRequest, this.fastq2BamPath);
+    convertFastq2Bam(convertRequest: Fastq2BamConvertRequest): Promise<number> {
+        return Fastq2BamConverter._convertFastq2Bam(convertRequest, this.fastq2BamPath);
+    }
+
+    assertBam(convertRequest: Fastq2BamConvertRequest): Promise<number> {
+        return Fastq2BamConverter._checkBamExists(convertRequest.outputDir, convertRequest.outputName)
+            .then((itExists) => {
+                    if(itExists) {
+                        console.log(`.bam file with name ${convertRequest.outputName} already exists at ${convertRequest.outputDir}`);
+                        return Promise.resolve(0);
+                    } else {
+                        console.log(`Doing bam conversion for ${convertRequest.reads.toString()}`);
+                        return Fastq2BamConverter._convertFastq2Bam(convertRequest, this.fastq2BamPath);
+                    }
+                });
+    }
+
+    static _checkBamExists(bamDir: string, bamName: string): Promise<boolean> {
+        return FileExistenceChecker.fileExists(`${bamDir}/${bamName}`);
     }
 
     /**
@@ -21,7 +39,7 @@ class Fastq2BamConverter{
      * @param convertRequest
      * @param fastq2BamPath
      */
-    _convertFastq2Bam(convertRequest: Fastq2BamConvertRequest, fastq2BamPath: string) : Promise<number> {
+    static _convertFastq2Bam(convertRequest: Fastq2BamConvertRequest, fastq2BamPath: string) : Promise<number> {
         return new Promise<number>((resolve, reject) => {
             const runParams: Fastq2BamParams = Fastq2BamConverter.fastq2BamParamsFromConvertRequest(convertRequest);
             const runArgs = Fastq2BamConverter.paramsToArgs(runParams);

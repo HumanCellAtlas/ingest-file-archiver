@@ -20,3 +20,5 @@ class FileExistenceChecker {
         });
     }
 }
+
+export default FileExistenceChecker;
