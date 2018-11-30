@@ -89,7 +89,7 @@ class FileUploader {
                 retryDelays: [0, 1000, 3000, 5000],
                 // @ts-ignore: TODO: tus-js-client typescript not being maintained
                 metadata: tusUpload.metadataToDict(),
-                chunkSize: 100000,
+                chunkSize: 2000000,
                 uploadSize: tusUpload.fileInfo.fileSize,
                 onError: (error: any) => {
                     console.log("Failed because: " + error);
