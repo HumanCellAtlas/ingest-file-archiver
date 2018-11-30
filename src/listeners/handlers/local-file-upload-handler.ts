@@ -62,7 +62,7 @@ class LocalFileUploadHandler implements IHandler {
         return new Promise<void>((resolve, reject) => {
             fastq2BamConverter.assertBam(bamConvertRequest)
                 .then((exitCode: number) => {
-                    if(exitCode ===  1) {
+                    if(exitCode === 0) {
                         resolve();
                     } else {
                         console.error("ERROR: fastq2Bam converter returned non-successful error code: " + String(exitCode));

@@ -116,8 +116,8 @@ class FileUploader {
         return Promise.resolve(tusUpload.addSubmission(submission));
     }
 
-    static _insertFileName(tusUpload: TusUpload, submission: string) : Promise<TusUpload> {
-        return Promise.resolve(tusUpload.addSubmission(submission));
+    static _insertFileName(tusUpload: TusUpload, fileName: string) : Promise<TusUpload> {
+        return Promise.resolve(tusUpload.addFileName(fileName));
     }
 
     _getToken() : Promise<string> {
