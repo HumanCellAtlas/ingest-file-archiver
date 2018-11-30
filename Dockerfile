@@ -2,6 +2,7 @@ FROM node:8-alpine
 
 WORKDIR /usr/src/app
 COPY app.ts package*.json tsconfig.json ./
+ADD fastq ./fastq
 ADD src ./src
 ADD config ./config
 
