@@ -89,7 +89,7 @@ class LocalFileUploadHandler implements IHandler {
 
     static _uploadRequestsFromUploadMessage(uploadMessage: FileUploadMessage, fileDirBasePath: string) : TusUpload[] {
         const tusUploads: TusUpload[] = [];
-        const uploadFileEndpoint = `${uploadMessage.usiUrl}/files`;
+        const uploadFileEndpoint = `${uploadMessage.usiUrl}/files/`;
 
         for(let i = 0; i < uploadMessage.fileNames.length; i ++) {
             const fileName = uploadMessage.fileNames[i];

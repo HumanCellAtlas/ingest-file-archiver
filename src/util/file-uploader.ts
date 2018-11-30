@@ -85,6 +85,7 @@ class FileUploader {
 
             upload = new tus.Upload(fileStream, {
                 endpoint: tusUpload.uploadUrl!,
+                uploadUrl: tusUpload.uploadUrl!,
                 retryDelays: [0, 1000, 3000, 5000],
                 // @ts-ignore: TODO: tus-js-client typescript not being maintained
                 metadata: tusUpload.metadataToDict(),

@@ -18,12 +18,12 @@ class TusUpload {
      * The JWT token should get added to metadata as the parameter for the "jwtToken"
      */
     addToken(jwtToken: string) : TusUpload {
-        this.metadata.push(TusUpload.metadataPair("jwtToken", `'${jwtToken}'`));
+        this.metadata.push(TusUpload.metadataPair("jwtToken", `${jwtToken}`));
         return this;
     }
 
     addSubmission(submission: string) : TusUpload {
-        this.metadata.push(TusUpload.metadataPair("submissionID", `'${submission}'`));
+        this.metadata.push(TusUpload.metadataPair("submissionID", `${submission}`));
         return this;
     }
 

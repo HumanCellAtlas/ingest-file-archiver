@@ -122,6 +122,9 @@ describe("Uploader tests", () => {
             metadataPopulated = event.file.upload_metadata;
         });
 
+        tusTestServer.tusServer!.on(tus.EVENT_ENDPOINT_CREATED, (event: any) => {
+            metadataPopulated = event.file.upload_metadata;
+        });
 
         const retrieveTokenMock = jest.spyOn(mockTokenClient, "retrieveToken");
         retrieveTokenMock.mockImplementation(() => {
