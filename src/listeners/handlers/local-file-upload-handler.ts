@@ -75,7 +75,7 @@ class LocalFileUploadHandler implements IHandler {
     static _generateBamConvertRequest(uploadMessageConversionMap: ConversionMap, fileDirBasePath: string) : Fastq2BamConvertRequest {
         return {
             reads: uploadMessageConversionMap.inputs,
-            outputName:  `${fileDirBasePath}/${uploadMessageConversionMap.outputName}`,
+            outputName:  uploadMessageConversionMap.outputName,
             outputDir: fileDirBasePath
         }
     }

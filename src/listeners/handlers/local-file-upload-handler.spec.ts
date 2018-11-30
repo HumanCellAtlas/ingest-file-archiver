@@ -45,7 +45,8 @@ describe("Local file uploader tests", () => {
         const mockIndex = "mockI.fastq.gz";
 
         const mockOutputName = "mockbam.bam";
-        const mockFileBasePathDir = "/data/myfiles";
+        const mockBundleUuid = "deadbaaa-dead-dead-dead-deaddeafbaaa";
+        const mockFileBasePathDir = `/data/myfiles/${mockBundleUuid}`;
 
         const mockConversionMapPair: ConversionMap = {
             inputs: [
@@ -69,6 +70,8 @@ describe("Local file uploader tests", () => {
         expect(convertRequestPair.reads).toContainEqual({readIndex: "read1", fileName: mockR1});
         expect(convertRequestPair.reads).toContainEqual({readIndex: "read2", fileName: mockR2});
         expect(convertRequestPair.reads).toContainEqual({readIndex: "index1", fileName: mockIndex});
-        expect(convertRequestPair.outputName).toEqual(`${mockFileBasePathDir}/${mockOutputName}`);
+        expect(convertRequestPair.outputName).toEqual(mockOutputName);
+        expect(convertRequestPair.outputName).toEqual(mockOutputName);
+        expect(convertRequestPair.outputDir).toEqual(mockFileBasePathDir);
     });
 });
