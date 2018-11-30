@@ -34,7 +34,7 @@ describe("Local file uploader tests", () => {
         uploadRequests.forEach((tusUpload: TusUpload) => {
             expect(tusUpload.fileInfo.filePath).toMatch((new RegExp(`${mockFileBasePathDir}/${mockBundleUuid}/mockFileName[123]`)));
             expect(tusUpload.submission).toEqual(mockSubmissionUuid);
-            expect(tusUpload.uploadUrl).toEqual(`${mockUsiUrl}/files`);
+            expect(tusUpload.uploadUrl).toEqual(`${mockUsiUrl}/files/`);
             expect(tusUpload.fileInfo.fileName).toMatch(new RegExp("mockFileName[123]"));
         });
     });
