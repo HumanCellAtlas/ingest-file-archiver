@@ -4,23 +4,23 @@ for param in "$@"
 do
     case $param in
 	-d=*|--base-dir=*)
-	    BUNDLE_BASE_DIR=${param#*=}
+	    export BUNDLE_BASE_DIR=${param#*=}
 	    shift
 	    ;;
 	-f=*|--upload-plan=*)
-	    UPLOAD_PLAN_PATH=${param#*=}
+	    export UPLOAD_PLAN_PATH=${param#*=}
 	    shift
 	    ;;
 	-l=*|--aap-url=*)
-	    AAP_URL=${param#*=}
+	    export AAP_URL=${param#*=}
 	    shift
 	    ;;
 	-p=*|--aap-password=*)
-	    AAP_PASSWORD=${param#*=}
+	    export AAP_PASSWORD=${param#*=}
 	    shift
 	    ;;
 	-u=*|--aap-username=*)
-	    AAP_USERNAME=${param#*=}
+	    export AAP_USERNAME=${param#*=}
 	    shift
 	    ;;
     esac
