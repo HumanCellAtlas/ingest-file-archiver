@@ -57,7 +57,7 @@ const fastq2BamConverter = (() => {
 })();
 
 const bundleDownloader = (() => {
-    return new BundleDownloader("/Users/rolando/development/hca/ingestion-infrastructure/ingestion/ingest-file-archiver/hca-cli/bin/hca");
+    return new BundleDownloader("hca");
 })();
 
 const bundleDirBasePath = (() => {
