@@ -32,4 +32,4 @@ if [ -z ${BUNDLE_BASE_DIR} ] || [ -z ${UPLOAD_PLAN_PATH} ] || [ -z ${AAP_URL} ] 
     exit 1
 fi
 
-echo "test"
+node /usr/src/app/dist/app.js
