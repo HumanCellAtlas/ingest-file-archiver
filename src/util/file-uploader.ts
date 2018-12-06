@@ -100,7 +100,7 @@ class FileUploader {
                     console.log(bytesUploaded, bytesTotal, percentage + "%");
                 },
                 onSuccess: () => {
-                    console.log("Download complete");
+                    console.log("Upload complete");
                     resolve(upload);
                 }
             });
