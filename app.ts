@@ -105,7 +105,10 @@ processUploadJobsSequential = (uploadJobs: UploadJob[]) : Promise<void> => {
 
 const start = () => {
     processUploadJobsSequential(uploadPlan.jobs)
-        .then(() => process.exit(0));
+        .then(() => {
+            console.log("Finshed");
+            process.exit(0)
+        });
 };
 
 start();
