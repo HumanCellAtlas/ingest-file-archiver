@@ -4,36 +4,22 @@ import config from "config";
 import LocalFileUploadHandler from "./src/listeners/handlers/local-file-upload-handler";
 import FileUploader from "./src/util/file-uploader";
 import AapTokenClient from "./src/util/aap-token-client";
-import {AAPCredentials, FileUploadMessage} from "./src/common/types";
+import {
+    AAPCredentials,
+    ConversionMap,
+    FileUploadMessage,
+    UploadJob,
+    UploadJobConversion,
+    UploadPlan
+} from "./src/common/types";
 import Fastq2BamConverter from "./src/util/fastq-2-bam-converter";
 import BundleDownloader from "./src/util/bundle-downloader";
 import R from "ramda";
 import Promise from "bluebird";
 import TokenManager from "./src/util/token-manager";
+import UploadPlanParser from "./src/util/upload-plan-parser";
 
 const args = process.argv;
-
-
-/* ----------------------------------- */
-
-type UploadJob = {
-    usi_api_url: string,
-    ingest_api_url: string,
-    submission_url: string,
-    files: string[],
-    bundle_uuid: string,
-    conversion: {
-        output_name: string,
-        inputs: {
-            "name": string,
-            "read_index": string
-        }[]
-    }
-}
-
-type UploadPlan = {
-    jobs: UploadJob[]
-}
 
 /* ----------------------------------- */
 
@@ -75,26 +61,13 @@ const uploadPlan: UploadPlan = JSON.parse(uploadPlanFileData.toString());
 
 /* ----------------------------------- */
 
-const uploadMessageForJob = (uploadJob: UploadJob): FileUploadMessage => {
-    return {
-        bundleUuid: uploadJob.bundle_uuid,
-        submissionUrl: uploadJob.submission_url,
-        fileNames: uploadJob.files,
-        usiUrl: uploadJob.usi_api_url,
-        conversionMap: {
-            inputs: R.map((conversionInput) => {return {readIndex: conversionInput.read_index, fileName: conversionInput.name} } , uploadJob.conversion.inputs),
-            outputName: uploadJob.conversion.output_name
-        }
-    }
-};
-
 let processUploadJobsSequential: (uploadJobs: UploadJob[]) => Promise<void>;
 processUploadJobsSequential = (uploadJobs: UploadJob[]) : Promise<void> => {
     if(uploadJobs.length == 0) {
         return Promise.resolve();
     } else {
         const uploadJob: UploadJob = R.head(uploadJobs)!;
-        const uploadMessage = uploadMessageForJob(uploadJob);
+        const uploadMessage = UploadPlanParser.uploadMessageForJob(uploadJob);
 
         return localFileUploadHandler.doLocalFileUpload(uploadMessage)
             .then(() => {

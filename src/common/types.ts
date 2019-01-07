@@ -95,6 +95,28 @@ namespace ts {
         bundleUuid: string,
         replica: string
     }
+
+    export type UploadJobConversion = {
+        output_name: string,
+        inputs: {
+            "name": string,
+            "read_index": string
+        }[]
+    }
+
+    export type UploadJob = {
+        usi_api_url: string,
+        ingest_api_url: string,
+        submission_url: string,
+        files: string[],
+        bundle_uuid: string,
+        conversion?: UploadJobConversion
+    }
+
+    export type UploadPlan = {
+        jobs: UploadJob[]
+    }
+
 }
 
 export = ts;
