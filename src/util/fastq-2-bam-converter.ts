@@ -1,5 +1,5 @@
 import {Fastq2BamConvertRequest, Fastq2BamParams, FastqReadInfo} from "../common/types";
-import {spawn} from "child_process";
+import {exec, spawn} from "child_process";
 import Promise from "bluebird";
 import R from "ramda";
 import FileExistenceChecker from "./file-existence-checker";
@@ -22,7 +22,7 @@ class Fastq2BamConverter{
                         console.log(`.bam file with name ${convertRequest.outputName} already exists at ${convertRequest.outputDir}`);
                         return Promise.resolve(0);
                     } else {
-                        console.log(`Doing bam conversion for ${convertRequest.reads.toString()}`);
+                        console.log(`Doing bam conversion for ${(R.map((read) => read.fileName, convertRequest.reads)).join(" ")}`);
                         return Fastq2BamConverter._convertFastq2Bam(convertRequest, this.fastq2BamPath);
                     }
                 });
@@ -44,15 +44,15 @@ class Fastq2BamConverter{
             const runParams: Fastq2BamParams = Fastq2BamConverter.fastq2BamParamsFromConvertRequest(convertRequest);
             const runArgs = Fastq2BamConverter.paramsToArgs(runParams);
 
-            const fastq2BamProcess = spawn(fastq2BamPath, runArgs, {cwd: convertRequest.outputDir, shell: true});
-
-            fastq2BamProcess.on("exit", (code: number, signal: string) => {
-                resolve(code);
+            exec(fastq2BamPath +  " " + runArgs.join(" "),
+                {cwd: convertRequest.outputDir, shell: "/bin/bash"},
+                (Err, stdout, stderr) => {
+                    if(Err) {
+                        reject(Err);
+                    } else {
+                        resolve(0);
+                    }
             });
-
-            fastq2BamProcess.on("error", err => {
-                reject(err);
-            })
         });
     }
 
