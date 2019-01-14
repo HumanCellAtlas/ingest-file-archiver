@@ -61,7 +61,11 @@ class BundleDownloader {
             const bundleDownloadProcess = spawn(hcaCliPath, runArgs, {cwd: bundleDownloadRequest.bundleBaseDir});
 
             bundleDownloadProcess.on("exit", (code: number, signal: string) => {
-                resolve();
+                if(code == 0) {
+                    resolve();
+                } else {
+                    reject(new Error("Failed to download bundle, process exited with code " + code));
+                }
             });
 
             bundleDownloadProcess.on("error", err => {
