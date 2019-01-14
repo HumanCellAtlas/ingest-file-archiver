@@ -45,7 +45,7 @@ class Fastq2BamConverter{
             const runArgs = Fastq2BamConverter.paramsToArgs(runParams);
 
             exec(fastq2BamPath +  " " + runArgs.join(" "),
-                {cwd: convertRequest.outputDir, shell: "/bin/bash"},
+                {cwd: convertRequest.outputDir},
                 (Err, stdout, stderr) => {
                     if(Err) {
                         reject(Err);
