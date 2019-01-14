@@ -32,4 +32,5 @@ if [ -z ${BUNDLE_BASE_DIR} ] || [ -z ${UPLOAD_PLAN_PATH} ] || [ -z ${AAP_URL} ] 
     exit 1
 fi
 
+cd /usr/src/app
 node /usr/src/app/dist/app.js
