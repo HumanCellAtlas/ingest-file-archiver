@@ -39,7 +39,7 @@ const fileUploader = (() => {
 })();
 
 const fastq2BamConverter = (() => {
-    return new Fastq2BamConverter("/usr/src/app/fastq/bin/fastq2bam");
+    return new Fastq2BamConverter("/app/fastq/bin/fastq2bam");
 })();
 
 const bundleDownloader = (() => {
