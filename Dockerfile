@@ -17,5 +17,7 @@ RUN pip3 install hca
 
 # Required for fastq2bam to find its binaries
 ENV PATH="${PATH}:/usr/src/app/fastq/bin"
+RUN chmod +x /usr/src/app/fastq/bin/fastq2bam
+RUN which fastq2bam
 
 ENTRYPOINT ["/usr/src/app/run.sh"]
