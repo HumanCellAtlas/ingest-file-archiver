@@ -43,10 +43,6 @@ class Fastq2BamConverter{
         return new Promise<number>((resolve, reject) => {
             const runParams: Fastq2BamParams = Fastq2BamConverter.fastq2BamParamsFromConvertRequest(convertRequest);
             const runArgs = Fastq2BamConverter.paramsToArgs(runParams);
-            console.log("converter path: " + fastq2BamPath);
-            console.log("working dir: " + convertRequest.outputDir);
-            console.log("run args: " + runArgs.join(" "));
-            console.log("cmd to run: " + fastq2BamPath +  " " + runArgs.join(" "));
 
             exec(fastq2BamPath +  " " + runArgs.join(" "),
                 {cwd: convertRequest.outputDir},

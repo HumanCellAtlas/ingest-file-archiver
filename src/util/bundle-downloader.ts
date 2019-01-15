@@ -54,10 +54,6 @@ class BundleDownloader {
         return new Promise<void>((resolve, reject) => {
             const runParams: BundleDownloadParams = BundleDownloader._bundleDownloadParamsFromBundleDownloadRequest(bundleDownloadRequest);
             const runArgs = BundleDownloader._bundleDownloadArgsFromParams(runParams);
-
-            console.log("bundle download working dir: " + bundleDownloadRequest.bundleBaseDir);
-            console.log("bundlw download run args: "+ runArgs.join(" "));
-
             const bundleDownloadProcess = spawn(hcaCliPath, runArgs, {cwd: bundleDownloadRequest.bundleBaseDir});
 
             bundleDownloadProcess.on("exit", (code: number|null, signal: string|null) => {
