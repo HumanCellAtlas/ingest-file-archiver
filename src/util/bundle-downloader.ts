@@ -72,10 +72,6 @@ class BundleDownloader {
                 reject(err);
             });
 
-            bundleDownloadProcess.stdout.on("data", data => {
-                console.log(data);
-            });
-
             bundleDownloadProcess.stderr.on("data" , data => {
                 console.log(data);
             });
