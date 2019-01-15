@@ -60,17 +60,29 @@ class BundleDownloader {
 
             const bundleDownloadProcess = spawn(hcaCliPath, runArgs, {cwd: bundleDownloadRequest.bundleBaseDir});
 
-            bundleDownloadProcess.on("exit", (code: number, signal: string) => {
-                if(code == 0) {
+            bundleDownloadProcess.on("exit", (code: number|null, signal: string|null) => {
+                if(code && code == 0) {
                     resolve();
                 } else {
-                    reject(new Error("Failed to download bundle, process exited with code " + code));
+                    if(code) {
+                        reject(new Error("Failed to download bundle, process exited with code " + code));
+                    } else if(signal) {
+                        reject(new Error("Failed to download bundle, process exited with signal " + signal));
+                    }
                 }
             });
 
             bundleDownloadProcess.on("error", err => {
                 reject(err);
-            })
+            });
+
+            bundleDownloadProcess.stdout.on("data", data => {
+                console.log(data);
+            });
+
+            bundleDownloadProcess.stderr.on("data" , data => {
+                console.log(data);
+            });
         });
     }
 
