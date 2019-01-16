@@ -72,8 +72,8 @@ class BundleDownloader {
                 reject(err);
             });
 
-            bundleDownloadProcess.stderr.on("data" , data => {
-                console.log(data);
+            bundleDownloadProcess.stderr.on("data" , (data: Buffer) => {
+                console.log(data.toString());
             });
         });
     }
