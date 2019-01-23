@@ -1,4 +1,5 @@
 import * as stream from "stream";
+import tus from "tus-js-client";
 
 namespace ts {
 
@@ -117,6 +118,9 @@ namespace ts {
         jobs: UploadJob[]
     }
 
+    export type AlreadyUploaded = "ALREADY_UPLOADED";
+
+    export type UploadAssertion = tus.Upload | AlreadyUploaded;
 }
 
 export = ts;

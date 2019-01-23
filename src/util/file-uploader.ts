@@ -9,7 +9,8 @@ import * as stream from "stream";
 import * as https from "https";
 import {RequestOptions} from "https";
 import {S3TusUpload} from "../model/s3-tus-upload";
-import {S3Auth} from "../common/types";
+import {AlreadyUploaded, S3Auth, UploadAssertion} from "../common/types";
+import UsiClient from "./usi-client";
 
 /**
  *
@@ -61,13 +62,33 @@ class FileUploader {
         }));
     }
 
+    assertFileUpload(tusUpload: TusUpload) : Promise<UploadAssertion> {
+        const submissionId = tusUpload.submission!;
+        const fileName = tusUpload.fileInfo.fileName;
+        const usiClient = new UsiClient(tusUpload.usiUrl!, this.tokenManager);
+
+        return new Promise<UploadAssertion>((resolve, reject) => {
+            usiClient.checkFileAlreadyUploaded(submissionId, fileName).then((isUploaded:boolean) => {
+                if(isUploaded) {
+                    const alreadyUploaded: UploadAssertion = "ALREADY_UPLOADED";
+                    resolve(alreadyUploaded);
+                } else {
+                    this.doUpload(tusUpload).then((upload: UploadAssertion) => {
+                        resolve(upload);
+                    });
+                }
+            });
+        });
+
+    }
+
     /**
      * Performs the upload, resolves when the upload finishes successfully
      *
      * @param tusUpload
      * @private
      */
-    doUpload(tusUpload: TusUpload) : Promise<Upload>{
+    doUpload(tusUpload: TusUpload) : Promise<tus.Upload>{
         return this._getToken()
             .then(token => {return FileUploader._insertToken(tusUpload, token)})
             .then(tusUpload => {return FileUploader._insertSubmission(tusUpload, tusUpload.submission!)})
@@ -75,7 +96,7 @@ class FileUploader {
             .then(tusUpload => {return this._doUpload(tusUpload)});
     }
 
-    _doUpload(tusUpload: TusUpload) : Promise<Upload>{
+    _doUpload(tusUpload: TusUpload) : Promise<tus.Upload>{
         return new Promise<Upload>((resolve, reject) => {
             // TODO: maintainers of tus-js-client need to add streams as an allowable type for tus file sources
             // @ts-ignore TODO: tus.io typescript maintainers need to allow Readable streams here

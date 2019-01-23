@@ -7,6 +7,7 @@ class TusUpload {
     metadata: TusMetadata[];
     chunkSize?: number;
     submission?: string;
+    usiUrl?: string
 
     constructor(fileInfo: FileInfo, uploadUrl: string) {
         this.fileInfo = fileInfo;
