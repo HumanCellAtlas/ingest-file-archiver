@@ -57,7 +57,7 @@ class BundleDownloader {
             const bundleDownloadProcess = spawn(hcaCliPath, runArgs, {cwd: bundleDownloadRequest.bundleBaseDir});
 
             bundleDownloadProcess.on("exit", (code: number|null, signal: string|null) => {
-                if(code && code == 0) {
+                if(code != null && code == 0) {
                     resolve();
                 } else {
                     if(code) {

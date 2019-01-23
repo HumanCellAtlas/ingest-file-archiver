@@ -81,6 +81,10 @@ const start = () => {
         .then(() => {
             console.log("Finshed");
             process.exit(0)
+        })
+        .catch(error => {
+            console.error("Error: " + error.toString());
+            process.exit(1)
         });
 };
 
