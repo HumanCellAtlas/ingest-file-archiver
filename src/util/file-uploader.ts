@@ -73,7 +73,7 @@ class FileUploader {
                     const alreadyUploaded: UploadAssertion = "ALREADY_UPLOADED";
                     resolve(alreadyUploaded);
                 } else {
-                    this.doUpload(tusUpload).then((upload: UploadAssertion) => {
+                    this.stageLocalFile(tusUpload).then((upload: UploadAssertion) => {
                         resolve(upload);
                     });
                 }

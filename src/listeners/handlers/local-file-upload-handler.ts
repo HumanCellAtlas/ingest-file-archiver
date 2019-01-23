@@ -3,7 +3,7 @@ import {IHandler, AmqpMessage} from "./handler";
 import FileUploader from "../../util/file-uploader";
 import TusUpload from "../../model/tus-upload";
 import url from "url";
-import {ConversionMap, Fastq2BamConvertRequest, FileUploadMessage} from "../../common/types";
+import {ConversionMap, Fastq2BamConvertRequest, FileUploadMessage, UploadAssertion} from "../../common/types";
 import Fastq2BamConverter from "../../util/fastq-2-bam-converter";
 import R from "ramda";
 import BundleDownloader from "../../util/bundle-downloader";
@@ -32,7 +32,7 @@ class LocalFileUploadHandler implements IHandler {
     doLocalFileUpload(fileUploadMessage: FileUploadMessage): Promise<void>{
         return LocalFileUploadHandler._maybeDownloadBundle(fileUploadMessage, this.bundleDirBasePath, this.bundleDownloader)
             .then(() => { return LocalFileUploadHandler._maybeBamConvert(fileUploadMessage, this.bundleDirBasePath, this.fastq2BamConverter)})
-            .then(() => { return LocalFileUploadHandler._upload(fileUploadMessage, this.fileUploader, this.bundleDirBasePath)})
+            .then(() => { return LocalFileUploadHandler._maybeUpload(fileUploadMessage, this.fileUploader, this.bundleDirBasePath)})
             .then(() => { return Promise.resolve()});
     }
 
@@ -80,9 +80,9 @@ class LocalFileUploadHandler implements IHandler {
         }
     }
 
-    static _upload(fileUploadMessage: FileUploadMessage, fileUploader: FileUploader, fileDirBasePath: string): Promise<Upload[]> {
+    static _maybeUpload(fileUploadMessage: FileUploadMessage, fileUploader: FileUploader, fileDirBasePath: string): Promise<UploadAssertion[]> {
         const tusUploads = LocalFileUploadHandler._uploadRequestsFromUploadMessage(fileUploadMessage, fileDirBasePath);
-        const fn = (tusUpload: TusUpload) => fileUploader.stageLocalFile(tusUpload);
+        const fn = (tusUpload: TusUpload) => fileUploader.assertFileUpload(tusUpload);
         const uploadPromises = R.map(fn, tusUploads);
         return Promise.all(uploadPromises);
     }
@@ -90,11 +90,13 @@ class LocalFileUploadHandler implements IHandler {
     static _uploadRequestsFromUploadMessage(uploadMessage: FileUploadMessage, fileDirBasePath: string) : TusUpload[] {
         const tusUploads: TusUpload[] = [];
         const uploadFileEndpoint = `${uploadMessage.usiUrl}/files/`;
+        const usiUrl = uploadMessage.usiUrl;
 
         for(let i = 0; i < uploadMessage.fileNames.length; i ++) {
             const fileName = uploadMessage.fileNames[i];
             const tusUpload = new TusUpload({fileName: fileName, filePath: `${fileDirBasePath}/${uploadMessage.bundleUuid}/${fileName}`}, uploadFileEndpoint);
             tusUpload.submission = LocalFileUploadHandler._submissionUuidFromSubmissionUri(new url.URL(uploadMessage.submissionUrl));
+            tusUpload.usiUrl = usiUrl;
             tusUploads.push(tusUpload);
         }
 
