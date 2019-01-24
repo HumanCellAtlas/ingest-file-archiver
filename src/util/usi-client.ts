@@ -46,7 +46,7 @@ class UsiClient {
     }
 
     retrieveSubmission(submissionId: string) : Promise<any> {
-        return this.retrieve(`${this.usiApiUrl}/api/${submissionId}`);
+        return this.retrieve(`${this.usiApiUrl}/api/submissions/${submissionId}`);
     }
 }
 
