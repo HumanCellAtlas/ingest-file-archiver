@@ -2,7 +2,6 @@ import {ConnectionProperties} from "../common/types";
 import request from "request-promise";
 import Promise from "bluebird";
 import TokenManager from "./token-manager";
-import R from "ramda";
 
 class UsiClient {
     usiApiConnectionProperties?: ConnectionProperties;
@@ -16,16 +15,7 @@ class UsiClient {
     }
 
     checkFileAlreadyUploaded(submissionId: string, fileName: string) : Promise<boolean> {
-        return this.retrieveSubmission(submissionId).then(submissionResource => {
-            const submissionContentsLink = submissionResource["_links"]["contents"]["href"];
-            return this.retrieve(submissionContentsLink).then(submissionContentsResource => {
-                const submissionFilesLink = submissionContentsResource["_links"]["files"]["href"];
-                return this.retrieve(submissionFilesLink).then(embeddedFilesResource => {
-                    const embeddedFiles: any[] = embeddedFilesResource["_embedded"]["files"];
-                    return Promise.resolve(R.any(file => file["filename"] == fileName, embeddedFiles));
-                });
-            });
-        });
+        return this.checkIfFileInSubmission(submissionId, fileName);
     }
 
     retrieve(resourceUrl: string) : Promise<any> {
@@ -47,6 +37,11 @@ class UsiClient {
 
     retrieveSubmission(submissionId: string) : Promise<any> {
         return this.retrieve(`${this.usiApiUrl}/api/submissions/${submissionId}`);
+    }
+
+    checkIfFileInSubmission(submissionId: string, fileName: string) : Promise<boolean>{
+        return this.retrieve(`${this.usiApiUrl}/api/files/search/by-submission?submissionId=${submissionId}&filename=${fileName}`)
+            .then((searchResults: any) => {return Promise.resolve(searchResults["_embedded"]["files"].length > 0)});
     }
 }
 
