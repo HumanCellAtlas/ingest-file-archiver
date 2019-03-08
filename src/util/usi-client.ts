@@ -40,8 +40,9 @@ class UsiClient {
     }
 
     checkIfFileInSubmission(submissionId: string, fileName: string) : Promise<boolean>{
-        return this.retrieve(`${this.usiApiUrl}/api/files/search/by-submission?submissionId=${submissionId}&filename=${fileName}`)
-            .then((searchResults: any) => {return Promise.resolve(searchResults["_embedded"]["files"].length > 0)});
+        return this.retrieve(`${this.usiApiUrl}/api/files/search/by-filename-and-submission?submissionId=${submissionId}&filename=${fileName}`)
+            .then(() => {return Promise.resolve(true)})
+            .catch(err => {return Promise.resolve(false)});
     }
 }
 
