@@ -71,6 +71,7 @@ class FileUploader {
             usiClient.checkFileAlreadyUploaded(submissionId, fileName).then((isUploaded:boolean) => {
                 if(isUploaded) {
                     const alreadyUploaded: UploadAssertion = "ALREADY_UPLOADED";
+                    console.log(`File with name ${tusUpload.fileInfo.fileName} has already been uploaded for submission ${tusUpload.submission}`);
                     resolve(alreadyUploaded);
                 } else {
                     this.stageLocalFile(tusUpload).then((upload: UploadAssertion) => {
