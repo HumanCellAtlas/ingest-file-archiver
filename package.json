@@ -14,7 +14,8 @@
     "ramda": "^0.26.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
-    "tus-js-client": "^1.5.1"
+    "tus-js-client": "^1.5.1",
+    "snyk": "^1.190.0"
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.8",
@@ -33,6 +34,9 @@
   },
   "scripts": {
     "test": "jest",
-    "build-ts": "tsc"
-  }
+    "build-ts": "tsc",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
+  },
+  "snyk": true
 }
