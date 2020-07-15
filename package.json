@@ -10,7 +10,7 @@
     "debug": "~2.6.9",
     "install": "^0.12.1",
     "jsonwebtoken": "^8.3.0",
-    "npm": "^6.4.1",
+    "npm": "^6.14.6",
     "ramda": "^0.26.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
