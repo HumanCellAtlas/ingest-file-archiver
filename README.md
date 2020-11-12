@@ -1,3 +1,5 @@
+_This repository was part of HCA DCP/1 and is not maintained anymore. DCP/2 development of this component continues in the forked repository at https://github.com/ebi-ait/ingest-file-archiver._
+
 # ingest-file-archiver
 Service for storing HCA sequencing data in the EBI archives.
 
